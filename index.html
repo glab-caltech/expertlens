@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="A blog post about ExpertLens and efficient adaptation of multimodal mixture-of-experts models.">
+  <title>ExpertLens — A research blog post</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #fff;
+      --surface: #fafafa;
+      --text: #111;
+      --muted: #555;
+      --faint: #858585;
+      --border: #e5e5e5;
+      --accent: #bb551d;
+      --sans: 'Geist', 'Helvetica Neue', Arial, sans-serif;
+      --mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    [data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #111;
+      --surface: #191919;
+      --text: #f4f4f4;
+      --muted: #b1b1b1;
+      --faint: #929292;
+      --border: #343434;
+      --accent: #f0a16a;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.65 var(--sans); -webkit-font-smoothing: antialiased; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; text-underline-offset: 3px; }
+    a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+    .progress { position: fixed; inset: 0 auto auto 0; width: 0; height: 2px; background: var(--accent); z-index: 10; }
+    .theme-toggle { position: fixed; top: 16px; right: 16px; z-index: 5; width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid var(--border); border-radius: 2px; background: var(--bg); color: var(--text); cursor: pointer; font: 18px var(--sans); }
+    .theme-toggle:hover { color: var(--accent); }
+    .wrap { max-width: 880px; margin: 0 auto; padding: 64px 24px 80px; }
+    article { max-width: 700px; margin: 0 auto; }
+    .eyebrow { margin: 0 0 12px; color: var(--accent); font: 12px/1.4 var(--mono); }
+    h1, h2, h3 { font-weight: 500; }
+    h1 { margin: 0 0 24px; font-size: clamp(34px, 5.5vw, 42px); line-height: 1.12; letter-spacing: -.02em; }
+    .meta { margin-bottom: 32px; }
+    .authors { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 15px; font-weight: 500; }
+    .authors a { color: var(--text); text-decoration: underline; text-decoration-color: var(--border); text-underline-offset: 3px; }
+    .authors a:hover { color: var(--accent); }
+    .post-date { margin: 10px 0 0; color: var(--faint); font: 12px/1.5 var(--mono); }
+    .post-date span + span::before { content: ' · '; }
+    .toc { margin: 0 0 40px; padding: 18px 0; border-block: 1px solid var(--border); }
+    .toc-title { margin: 0 0 8px; color: var(--faint); font: 13px var(--mono); }
+    .toc ol { margin: 0; padding-left: 22px; }
+    .toc li { margin: 4px 0; padding-left: 2px; font-size: 15px; line-height: 1.55; }
+    .toc li::marker { color: var(--faint); font: 13px var(--mono); }
+    .toc a { color: var(--text); }
+    .toc a:hover { color: var(--accent); }
+    article > p, section > p { margin: 0 0 20px; }
+    h2 { margin: 48px 0 16px; font-size: 24px; line-height: 1.3; scroll-margin-top: 24px; }
+    h3 { margin: 28px 0 12px; font-size: 17px; }
+    .lead { font-size: 18px; line-height: 1.6; }
+    blockquote { margin: 28px 0; padding: 2px 0 2px 20px; border-left: 2px solid var(--accent); color: var(--muted); }
+    blockquote p { margin: 8px 0; }
+    figure { margin: 36px 0; }
+    .figure-placeholder { min-height: 290px; display: grid; place-content: center; gap: 8px; padding: 24px; border: 1px solid var(--border); border-radius: 2px; background: var(--surface); color: var(--faint); text-align: center; }
+    .figure-placeholder strong { color: var(--muted); font-weight: 500; }
+    .figure-placeholder small { font: 12px var(--mono); }
+    figure img { display: block; width: 100%; height: auto; border: 1px solid var(--border); }
+    figcaption { margin-top: 10px; color: var(--faint); font-size: 13px; line-height: 1.5; }
+    footer { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--border); color: var(--faint); font: 12px/1.6 var(--mono); }
+    @media (max-width: 620px) {
+      .wrap { padding: 76px 22px 60px; }
+      .theme-toggle { top: 12px; right: 12px; }
+      .figure-placeholder { min-height: 210px; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  </style>
+</head>
+<body>
+  <div class="progress" id="progress" aria-hidden="true"></div>
+  <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to dark mode" title="Toggle color theme">☾</button>
+
+  <div class="wrap">
+    <main>
+      <article>
+        <header>
+          <p class="eyebrow">RESEARCH NOTE / EXPERTLENS</p>
+          <h1>What do the experts inside a multimodal model know?</h1>
+          <div class="meta">
+            <div class="authors" aria-label="Authors">
+              <a href="https://damianomarsili.github.io/">Damiano Marsili</a>
+              <a href="https://www.raphikang.com/">Raphi Kang</a>
+              <a href="https://aditya-mehta1.github.io/">Aditya Mehta</a>
+              <a href="https://www.vision.caltech.edu/">Pietro Perona</a>
+              <a href="https://georgiagkioxari.com/">Georgia Gkioxari</a>
+            </div>
+            <p class="post-date"><span>ExpertLens</span><span>Draft blog post</span></p>
+          </div>
+        </header>
+
+        <!-- Rename, reorder, or remove these sections as the story takes shape. Keep the href/id pairs in sync. -->
+        <nav class="toc" aria-label="In this post">
+          <p class="toc-title">In this post</p>
+          <ol>
+            <li><a href="#opening">The question</a></li>
+            <li><a href="#inside-the-model">Looking inside the model</a></li>
+            <li><a href="#expertlens">The ExpertLens idea</a></li>
+            <li><a href="#adaptation">Putting specialists to work</a></li>
+            <li><a href="#takeaways">What we learned</a></li>
+          </ol>
+        </nav>
+
+        <section aria-labelledby="opening">
+          <h2 id="opening">The question</h2>
+          <p class="lead">[Start with the question or observation that made this work feel necessary. A concrete example can bring readers in before any method details.]</p>
+          <p>[Add a short paragraph explaining why this matters to someone who has not read the paper. Keep the pace conversational.]</p>
+        </section>
+
+        <section aria-labelledby="inside-the-model">
+          <h2 id="inside-the-model">Looking inside the model</h2>
+          <p>[Introduce mixture-of-experts models in plain language. What might it mean for an expert to specialize in a domain?]</p>
+          <figure>
+            <div class="figure-placeholder" role="img" aria-label="Placeholder for a model or motivation figure">
+              <strong>Figure goes here</strong>
+              <small>e.g. a routing or domain-specialization visual</small>
+            </div>
+            <figcaption>A short caption that tells readers what to notice.</figcaption>
+          </figure>
+          <!-- To add a real figure: replace the div above with <img src="static/your-figure.png" alt="Describe the figure">. -->
+        </section>
+
+        <section aria-labelledby="expertlens">
+          <h2 id="expertlens">The ExpertLens idea</h2>
+          <p>[Explain the central idea in a few sentences. What is the intuition behind identifying domain specialists?]</p>
+          <blockquote><p>[A one-sentence takeaway or analogy could go here.]</p></blockquote>
+          <p>[Walk through one illustrative example before adding any technical detail.]</p>
+        </section>
+
+        <section aria-labelledby="adaptation">
+          <h2 id="adaptation">Putting specialists to work</h2>
+          <p>[Tell the story of how the identified experts are used for adaptation. What comparison or result should the reader see first?]</p>
+          <figure>
+            <div class="figure-placeholder" role="img" aria-label="Placeholder for a results figure">
+              <strong>Result figure goes here</strong>
+              <small>e.g. performance across domains or training cost</small>
+            </div>
+            <figcaption>Explain the result in a sentence, including the comparison that matters.</figcaption>
+          </figure>
+        </section>
+
+        <section aria-labelledby="takeaways">
+          <h2 id="takeaways">What we learned</h2>
+          <p>[Close with the larger lesson, where the method helps, and what questions remain open.]</p>
+          <!-- Add public paper and code links here when they are available. -->
+        </section>
+
+        <footer>ExpertLens · Blog draft</footer>
+      </article>
+    </main>
+  </div>
+
+  <script>
+    const root = document.documentElement;
+    const toggle = document.getElementById('theme-toggle');
+    const progress = document.getElementById('progress');
+    // Storage may be unavailable when previewing the file directly in a browser.
+    let savedTheme;
+    try { savedTheme = localStorage.getItem('expertlens-theme'); } catch (_) { /* use system theme */ }
+    if (savedTheme === 'dark' || savedTheme === 'light') root.dataset.theme = savedTheme;
+    else if (matchMedia('(prefers-color-scheme: dark)').matches) root.dataset.theme = 'dark';
+
+    function updateToggle() {
+      const dark = root.dataset.theme === 'dark';
+      toggle.textContent = dark ? '☀' : '☾';
+      toggle.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+    }
+    toggle.addEventListener('click', () => {
+      root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      try { localStorage.setItem('expertlens-theme', root.dataset.theme); } catch (_) { /* keep theme for this page */ }
+      updateToggle();
+    });
+    updateToggle();
+
+    function updateProgress() {
+      const available = document.documentElement.scrollHeight - innerHeight;
+      progress.style.width = `${available > 0 ? Math.min(100, scrollY / available * 100) : 0}%`;
+    }
+    addEventListener('scroll', updateProgress, { passive: true });
+    addEventListener('resize', updateProgress);
+    updateProgress();
+  </script>
+</body>
+</html>

@@ -232,10 +232,10 @@
       text(`“${token}”`, 385, y + 13, 12, color.ink, 'left', false, 500);
       ctx.restore();
 
-      if (index < 4) {
+      if (index < 5) {
         ctx.save();
         ctx.globalAlpha *= between(t, 8.85 + index * .38, 9.1 + index * .38);
-        text('✓', 503, y + 14, 17, color.accent, 'center');
+        text(index === 4 ? '✗' : '✓', 503, y + 14, 17, color.accent, 'center');
         ctx.restore();
       }
     });

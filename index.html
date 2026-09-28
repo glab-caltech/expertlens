@@ -230,6 +230,11 @@
                   </section>
           <section class="subsection" id="expertlens">
             <h3>ExpertLens</h3>
+            <p>So far, we’ve found specialization by looking at how experts respond to data. But if we want to actually use this structure for adaptation, 
+              it would be much more useful to identify the relevant experts from the pretrained model itself, without first needing a representative dataset from 
+              all the domains we might want to adapt to.</p>
+              <p>This is the idea behind our method, ExpertLens. ExpertLens recovers expert semantics directly from pretrained weights by decoding router
+                 weights into semantically meaningful vocabulary tokens. We illustrate our method in the animation below. </p>
             <figure class="lens-film" id="expertlens-film" aria-label="ExpertLens weight-decoding animation">
               <canvas class="lens-canvas" id="lens-canvas" width="700" height="380" role="img" aria-label="Illustrative animation: a Qwen3-VL decoder layer contains two RMSNorm stages, causal self-attention, residual additions, and a sparse mixture of experts. ExpertLens extracts a router-weight row without input examples, projects it through the language-model head, and shows four of five top-scoring tokens as math-related. This five-token decision is a simplified illustration of the method.">
                 ExpertLens decodes a router-weight row through the language-model head. In this simplified five-token illustration, four math-related tokens suggest a math expert.
@@ -241,7 +246,22 @@
                 <span class="lens-clock">0:00 / 0:18</span>
               </div>
             </figure>
-          </section>
+            <p>For a given expert, we take its router weight and pass it through the model’s language-model head. This gives us a ranked list of vocabulary tokens 
+              associated with that expert. A math expert, for example, might decode to words like algebra, equation, or Euler; a medical expert might decode to terms related to DNA or patient. 
+              We then use those decoded tokens to decide whether an expert is associated with a target domain. The nice part is that this does not require any domain examples. ExpertLens reads 
+              the specialization directly from the pretrained model weights.</p>
+            <p>Now we've identified a set of experts that look domain-specialized from their weights, but do they actually behave that way on real data? To find out, we group the experts that 
+              ExpertLens labels as medical, math, or remote-sensing specialists and measure how often each group activates on datasets from those domains.</p>
+            <figure>
+              <div class="figure-placeholder" role="img" aria-label="Placeholder for a results figure">
+                <strong>Placeholder</strong>
+              </div>
+              <figcaption></figcaption>
+            </figure>
+            <p>We find medical experts are preferentially activated by medical data, math experts by math data, 
+              and remote-sensing experts by remote-sensing data, with the clearest alignment on image patches. In other words, the semantic 
+              preferences recovered from the weights line up closely with the experts’ actual routing behavior.</p>
+            </section>
         </section>
 
         <section aria-labelledby="adaptation-heading">
@@ -348,6 +368,6 @@
     updateRoute();
 
   </script>
-  <script src="static/expertlens-animation.js" defer></script>
+  <script src="static/expertlens-animation.js?v=2" defer></script>
 </body>
 </html>

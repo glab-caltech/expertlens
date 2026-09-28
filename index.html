@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="light dark">
+  <meta name="color-scheme" content="light">
   <meta name="description" content="A blog post about ExpertLens and efficient adaptation of multimodal mixture-of-experts models.">
-  <title>ExpertLens — A research blog post</title>
+  <title>Harnessing Domain Specialists in Multimodal Mixture-of-Experts for Efficient Adaptation</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
       color-scheme: light;
@@ -19,18 +19,8 @@
       --faint: #858585;
       --border: #e5e5e5;
       --accent: #bb551d;
-      --sans: 'Geist', 'Helvetica Neue', Arial, sans-serif;
-      --mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-    }
-    [data-theme="dark"] {
-      color-scheme: dark;
-      --bg: #111;
-      --surface: #191919;
-      --text: #f4f4f4;
-      --muted: #b1b1b1;
-      --faint: #929292;
-      --border: #343434;
-      --accent: #f0a16a;
+      --sans: 'DM Sans', 'Helvetica Neue', Arial, sans-serif;
+      --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
     }
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
@@ -39,34 +29,44 @@
     a { color: var(--accent); text-decoration: none; }
     a:hover { text-decoration: underline; text-underline-offset: 3px; }
     a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
-    .progress { position: fixed; inset: 0 auto auto 0; width: 0; height: 2px; background: var(--accent); z-index: 10; }
-    .theme-toggle { position: fixed; top: 16px; right: 16px; z-index: 5; width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid var(--border); border-radius: 2px; background: var(--bg); color: var(--text); cursor: pointer; font: 18px var(--sans); }
-    .theme-toggle:hover { color: var(--accent); }
     .wrap { max-width: 880px; margin: 0 auto; padding: 64px 24px 80px; }
     article { max-width: 700px; margin: 0 auto; }
-    .eyebrow { margin: 0 0 12px; color: var(--accent); font: 12px/1.4 var(--mono); }
     h1, h2, h3 { font-weight: 500; }
     h1 { margin: 0 0 24px; font-size: clamp(34px, 5.5vw, 42px); line-height: 1.12; letter-spacing: -.02em; }
     .meta { margin-bottom: 32px; }
-    .authors { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 15px; font-weight: 500; }
-    .authors a { color: var(--text); text-decoration: underline; text-decoration-color: var(--border); text-underline-offset: 3px; }
+    .authors { display: flex; flex-direction: column; gap: 14px; font-size: 15px; font-weight: 500; }
+    .author-row { display: flex; flex-wrap: wrap; gap: 14px 22px; }
+    .authors a { display: inline-flex; align-items: center; gap: 10px; color: var(--text); }
+    .authors img { width: 48px; height: 48px; flex: none; border: 1px solid var(--border); border-radius: 50%; object-fit: cover; }
+    .authors .author-name { text-decoration: underline; text-decoration-color: var(--border); text-underline-offset: 3px; }
+    .authors sup { margin-left: 2px; font-size: 11px; }
     .authors a:hover { color: var(--accent); }
-    .post-date { margin: 10px 0 0; color: var(--faint); font: 12px/1.5 var(--mono); }
-    .post-date span + span::before { content: ' · '; }
-    .toc { margin: 0 0 40px; padding: 18px 0; border-block: 1px solid var(--border); }
-    .toc-title { margin: 0 0 8px; color: var(--faint); font: 13px var(--mono); }
-    .toc ol { margin: 0; padding-left: 22px; }
-    .toc li { margin: 4px 0; padding-left: 2px; font-size: 15px; line-height: 1.55; }
-    .toc li::marker { color: var(--faint); font: 13px var(--mono); }
-    .toc a { color: var(--text); }
-    .toc a:hover { color: var(--accent); }
+    .contribution-note { margin: 10px 0 0; color: var(--muted); font-size: 13px; }
     article > p, section > p { margin: 0 0 20px; }
     h2 { margin: 48px 0 16px; font-size: 24px; line-height: 1.3; scroll-margin-top: 24px; }
     h3 { margin: 28px 0 12px; font-size: 17px; }
+    .overview h2 { margin-top: 0; }
+    .intro-emphasis { color: var(--muted); text-decoration: underline; text-decoration-color: var(--faint); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+    .subsection { scroll-margin-top: 94px; }
     .lead { font-size: 18px; line-height: 1.6; }
+    .reading-route { position: sticky; top: 0; z-index: 8; height: 76px; margin: 32px 0 24px; padding: 29px 0 0; background: var(--bg); border-bottom: 1px solid var(--border); }
+    .route-label { position: absolute; top: 12px; left: 50%; max-width: min(320px, 78vw); overflow: hidden; color: var(--text); font: 500 11px/15px var(--mono); white-space: nowrap; text-overflow: ellipsis; transform: translateX(-50%); pointer-events: none; }
+    .reading-route svg { display: block; width: 100%; height: 24px; overflow: visible; }
+    .route-track, .route-progress { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .route-track { stroke: var(--border); stroke-width: 1.5; }
+    .route-progress { stroke: var(--accent); stroke-width: 1.7; stroke-dasharray: 0 1000; }
+    .route-parts { position: absolute; right: 2.57%; bottom: 4px; left: 2.57%; display: flex; justify-content: space-between; color: var(--faint); font: 10px/13px var(--mono); white-space: nowrap; }
+    .route-parts span:first-child { width: 45%; text-align: center; }
+    .route-parts span:last-child { width: 40%; text-align: center; }
+    .route-parts::after { position: absolute; top: 1px; left: 55%; width: 1px; height: 11px; background: var(--border); content: ''; }
+    .route-stop { position: absolute; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; transform: translate(-50%, -50%); }
+    .route-node { width: 8px; height: 8px; border: 1.4px solid var(--faint); border-radius: 50%; background: var(--bg); transition: background .2s, border-color .2s; }
+    .route-stop.is-passed .route-node, .route-stop:hover .route-node, .route-stop:focus-visible .route-node { background: var(--accent); border-color: var(--accent); }
+    .route-marker { position: absolute; width: 11px; height: 11px; border: 2px solid var(--bg); border-radius: 50%; background: var(--accent); transform: translate(-50%, -50%); opacity: 0; pointer-events: none; }
     blockquote { margin: 28px 0; padding: 2px 0 2px 20px; border-left: 2px solid var(--accent); color: var(--muted); }
     blockquote p { margin: 8px 0; }
     figure { margin: 36px 0; }
+    .modality-figure img { border: 0; }
     .figure-placeholder { min-height: 290px; display: grid; place-content: center; gap: 8px; padding: 24px; border: 1px solid var(--border); border-radius: 2px; background: var(--surface); color: var(--faint); text-align: center; }
     .figure-placeholder strong { color: var(--muted); font-weight: 500; }
     .figure-placeholder small { font: 12px var(--mono); }
@@ -75,124 +75,232 @@
     footer { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--border); color: var(--faint); font: 12px/1.6 var(--mono); }
     @media (max-width: 620px) {
       .wrap { padding: 76px 22px 60px; }
-      .theme-toggle { top: 12px; right: 12px; }
       .figure-placeholder { min-height: 210px; }
+      .route-parts { font-size: 9px; }
+      .route-parts::after { display: none; }
     }
-    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .route-node { transition: none; } }
   </style>
 </head>
 <body>
-  <div class="progress" id="progress" aria-hidden="true"></div>
-  <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to dark mode" title="Toggle color theme">☾</button>
-
   <div class="wrap">
     <main>
       <article>
         <header>
-          <p class="eyebrow">RESEARCH NOTE / EXPERTLENS</p>
-          <h1>What do the experts inside a multimodal model know?</h1>
+          <h1>Harnessing Domain Specialists in Multimodal Mixture-of-Experts for Efficient Adaptation</h1>
           <div class="meta">
             <div class="authors" aria-label="Authors">
-              <a href="https://damianomarsili.github.io/">Damiano Marsili</a>
-              <a href="https://www.raphikang.com/">Raphi Kang</a>
-              <a href="https://aditya-mehta1.github.io/">Aditya Mehta</a>
-              <a href="https://www.vision.caltech.edu/">Pietro Perona</a>
-              <a href="https://georgiagkioxari.com/">Georgia Gkioxari</a>
+              <div class="author-row">
+                <a href="https://damianomarsili.github.io/"><img src="static/pictures/people/damiano.jpeg" alt="" width="48" height="48"><span><span class="author-name">Damiano Marsili</span><sup>*</sup></span></a>
+                <a href="https://www.raphikang.com/"><img src="static/pictures/people/raphi.png" alt="" width="48" height="48"><span><span class="author-name">Raphi Kang</span><sup>*</sup></span></a>
+                <a href="https://aditya-mehta1.github.io/"><img src="static/pictures/people/aditya.webp" alt="" width="48" height="48"><span class="author-name">Aditya Mehta</span></a>
+              </div>
+              <div class="author-row">
+                <a href="https://www.vision.caltech.edu/"><img src="static/pictures/people/pietro.png" alt="" width="48" height="48"><span class="author-name">Pietro Perona</span></a>
+                <a href="https://georgiagkioxari.com/"><img src="static/pictures/people/georgia.png" alt="" width="48" height="48"><span class="author-name">Georgia Gkioxari</span></a>
+              </div>
             </div>
-            <p class="post-date"><span>ExpertLens</span><span>Draft blog post</span></p>
+            <p class="contribution-note">* equal contribution</p>
           </div>
         </header>
 
-        <!-- Rename, reorder, or remove these sections as the story takes shape. Keep the href/id pairs in sync. -->
-        <nav class="toc" aria-label="In this post">
-          <p class="toc-title">In this post</p>
-          <ol>
-            <li><a href="#opening">The question</a></li>
-            <li><a href="#inside-the-model">Looking inside the model</a></li>
-            <li><a href="#expertlens">The ExpertLens idea</a></li>
-            <li><a href="#adaptation">Putting specialists to work</a></li>
-            <li><a href="#takeaways">What we learned</a></li>
-          </ol>
+        <section class="overview" aria-labelledby="overview-heading">
+          <p>In this post, we’ll take a closer look at the internal structure of multimodal Mixture-of-Experts (MoE) models. We’ll start by asking whether their
+            experts naturally organize themselves around <span class="intro-emphasis">different modalities, semantic domains,</span> and even <span class="intro-emphasis">finer-grained visual concepts.</span> We’ll then look at how
+            that structure can be <span class="intro-emphasis">uncovered from the model itself</span>, without needing to probe it with domain-specific data. Finally, we’ll show how this emergent
+            modularity can be put to practical use, using it to <span class="intro-emphasis">adapt multimodal MoEs more efficiently</span> by updating the experts that matter most for a new domain.</p>
+        </section>
+
+        <nav class="reading-route" aria-label="Journey through the paper">
+          <span class="route-label" id="route-label" aria-hidden="true" hidden></span>
+          <svg viewBox="0 0 700 32" preserveAspectRatio="none" aria-hidden="true">
+            <path class="route-track" d="M 18 19 C 47 19 67 10 103 10 S 164 18 201 18 S 263 10 302 10 C 333 10 352 23 389 23 C 420 23 426 14 457 14 S 514 19 552 19 S 635 10 682 10"></path>
+            <path class="route-progress" id="route-progress" d="M 18 19 C 47 19 67 10 103 10 S 164 18 201 18 S 263 10 302 10 C 333 10 352 23 389 23 C 420 23 426 14 457 14 S 514 19 552 19 S 635 10 682 10"></path>
+          </svg>
+          <div class="route-parts" aria-hidden="true"><span>Emergent Structure</span><span>Efficient Adaptation</span></div>
+          <a class="route-stop" href="#modality" data-x="18" data-title="Specialization by modality" style="left:2.57%;top:43px" aria-label="Specialization by modality"><span class="route-node"></span></a>
+          <a class="route-stop" href="#domain-specificity" data-x="103" data-title="Domain specificity" style="left:14.71%;top:36.5px" aria-label="Domain specificity"><span class="route-node"></span></a>
+          <a class="route-stop" href="#object-semantics" data-x="201" data-title="Specialization by object semantics" style="left:28.71%;top:42.5px" aria-label="Specialization by object semantics"><span class="route-node"></span></a>
+          <a class="route-stop" href="#expertlens" data-x="302" data-title="ExpertLens" style="left:43.14%;top:36.5px" aria-label="ExpertLens"><span class="route-node"></span></a>
+          <a class="route-stop" href="#efficient-adaptation" data-x="457" data-title="ExpertLens for efficient adaptation" style="left:65.29%;top:39.5px" aria-label="ExpertLens for efficient adaptation"><span class="route-node"></span></a>
+          <a class="route-stop" href="#expert-selection" data-x="552" data-title="Importance of expert selection" style="left:78.86%;top:43.25px" aria-label="Importance of expert selection"><span class="route-node"></span></a>
+          <a class="route-stop" href="#kimi-vl" data-x="682" data-title="Experiments on Kimi-VL" style="left:97.43%;top:36.5px" aria-label="Experiments on Kimi-VL"><span class="route-node"></span></a>
+          <span class="route-marker" id="route-marker" aria-hidden="true"></span>
         </nav>
 
-        <section aria-labelledby="opening">
-          <h2 id="opening">The question</h2>
-          <p class="lead">[Start with the question or observation that made this work feel necessary. A concrete example can bring readers in before any method details.]</p>
-          <p>[Add a short paragraph explaining why this matters to someone who has not read the paper. Keep the pace conversational.]</p>
+        <section aria-labelledby="structure-heading">
+          <h2 id="structure-heading">Emergent Structure in Mixture-of-Experts VLMs</h2>
+          <p>We begin by asking a simple question: do pre-trained multimodal MoEs develop meaningful 
+            internal structure? To explore this, we look at expert specialization 
+            at three increasingly fine-grained levels: first across modalities, then across 
+            semantic domains, and finally across individual visual concepts. We find that this 
+            organization appears surprisingly consistently, suggesting that the experts are far 
+            from interchangeable. We close this section by introducing ExpertLens, a way to uncover 
+            this structure directly from the model’s pretrained weights, without needing any 
+            domain-specific data.</p>
+          <section class="subsection" id="modality">
+            <h3>Specialization by modality</h3>
+            <p>We start with the most basic distinction in a multimodal model: <b>vision versus language</b>. 
+              Since the same MoE layers process both image patches and text tokens, we asked whether 
+              individual experts treat these two modalities differently, or whether they are used 
+              more or less interchangeably.</p>
+              <p>To test this, we measured how often each expert was activated by image patches versus text tokens. 
+                The pattern is striking: many experts show a clear preference for one modality or the other. In the 
+                figure below, each vertical bar represents an expert, with orange showing image-patch activations and 
+                purple showing text-token activations. Across layers, experts are rarely perfectly balanced—instead, 
+                many lean strongly toward either vision or language.</p>
+            <figure class="modality-figure">
+              <img src="static/pictures/figures/modality.png" alt="Modality specialization of Qwen3-VL." width="13915" height="4389" loading="lazy">
+              <figcaption><b>(A)</b>: Modality specialization in Qwen3-VL-30B-A3B. Experts across layers favor image patches 
+                (orange) or text tokens (purple). <b>(B)</b>: Distribution of each expert’s text-token activation share. 
+                producing a bimodal distribution of modality preference. The distribution is bimodal (Hartigan dip = 0.0136, p < 0.001).</figcaption>
+            </figure>
+            <p>This structure is especially clear when we look across all experts at once <b>(B)</b>. Rather than seeing a single peak 
+              around a 50/50 split, the distribution is distinctly bimodal: one group of experts is strongly image-oriented, 
+              while another is much more text-oriented. In other words, even though the model was not explicitly designed with 
+              separate “vision experts” and “language experts,” that division begins to emerge naturally during pre-training.</p>
+              
+              <p>The above figures show Qwen3-VL-30B-A3B. We find Gemma-4-26B-A4B is similarly bimodal, while Kimi-VL-A3B is more nearly 
+                unimodal, likely due to its smaller expert pool.</p>
+          </section>
+          <section class="subsection" id="domain-specificity">
+            <h3>Specialization by domain</h3>
+            <p>The modality results show that experts are not used interchangeably across vision and language. We next ask whether this specialization
+               extends <b>within each modality</b>: do multimodal MoEs also organize their representations and experts around different semantic domains?</p>
+            <p>We study this using datasets from three very different settings: medical imaging, mathematical reasoning, and remote sensing. We start by
+              looking at the token representations that drive routing. When we project image-patch and text-token activations from these datasets, a clear 
+              difference emerges. Image representations form much tighter domain-specific clusters, while text representations are more mixed. Furthermore, datasets 
+              from the same domain often occupy similar regions, suggesting that the organization reflects broader semantic structure rather than simply 
+              individual dataset identity. We show projections from Layer 18 of Qwen3-VL-30B-A3B, but find similar structure is evident with other layers 
+              of Qwen3-VL-30B-A3B and other multimodal MoEs.
+            </p>
+            <figure class="modality-figure">
+              <img src="static/pictures/figures/tsne.png" alt="t-SNE projections of medical, math, and remote-sensing image and text activations from Qwen3-VL." width="18524" height="6780" loading="lazy">
+              <figcaption><b>(A)</b> Layer-18 image-patch and text-token activations from six datasets, projected alongside router weights with t-SNE. 
+                <b>(B)</b> All domains together: image patches form tighter domain-specific clusters than text tokens.</figcaption>
+            </figure>
+            <p>To characterize this organization more systematically, we measure the local structure of the representation space using nearest-neighbor purity. 
+              This lets us ask not only whether representations cluster, but what properties best explain that clustering.</p>
+            <p>For image patches, representations are organized much more strongly by dataset than by simple visual properties such as average color or spatial patch position. 
+              Text tokens show a different pattern: their representations align more strongly with linguistic structure, such as part of speech, than with dataset identity.</p>  
+              <figure class="modality-figure">
+              <img src="static/pictures/figures/knn_purity.png" alt="Nearest-neighbor purity across layers for Qwen3-VL and Kimi-VL. Text tokens align more with part of speech, while image patches align more with dataset than color or patch position." width="8610" height="3020" loading="lazy">
+              <figcaption>Nearest-neighbor purity across layers in Qwen3-VL-30B-A3B and Kimi-VL-A3B. Text tokens cluster most strongly by part of speech; image patches cluster more by dataset than by color or spatial position. Curves show different numbers of neighbors (k).</figcaption>
+            </figure>
+            <p>Together, these results point to a particularly strong <b>domain-level organization</b> in the visual representations of multimodal MoEs.</p>
+            </section>
+          <section class="subsection" id="object-semantics">
+            <h3>Specialization by object semantics</h3>
+            <p></p>
+          </section>
+          <section class="subsection" id="expertlens">
+            <h3>ExpertLens</h3>
+            <p></p>
+          </section>
         </section>
 
-        <section aria-labelledby="inside-the-model">
-          <h2 id="inside-the-model">Looking inside the model</h2>
-          <p>[Introduce mixture-of-experts models in plain language. What might it mean for an expert to specialize in a domain?]</p>
-          <figure>
-            <div class="figure-placeholder" role="img" aria-label="Placeholder for a model or motivation figure">
-              <strong>Figure goes here</strong>
-              <small>e.g. a routing or domain-specialization visual</small>
-            </div>
-            <figcaption>A short caption that tells readers what to notice.</figcaption>
-          </figure>
-          <!-- To add a real figure: replace the div above with <img src="static/your-figure.png" alt="Describe the figure">. -->
-        </section>
-
-        <section aria-labelledby="expertlens">
-          <h2 id="expertlens">The ExpertLens idea</h2>
-          <p>[Explain the central idea in a few sentences. What is the intuition behind identifying domain specialists?]</p>
-          <blockquote><p>[A one-sentence takeaway or analogy could go here.]</p></blockquote>
-          <p>[Walk through one illustrative example before adding any technical detail.]</p>
-        </section>
-
-        <section aria-labelledby="adaptation">
-          <h2 id="adaptation">Putting specialists to work</h2>
-          <p>[Tell the story of how the identified experts are used for adaptation. What comparison or result should the reader see first?]</p>
-          <figure>
-            <div class="figure-placeholder" role="img" aria-label="Placeholder for a results figure">
-              <strong>Result figure goes here</strong>
-              <small>e.g. performance across domains or training cost</small>
-            </div>
-            <figcaption>Explain the result in a sentence, including the comparison that matters.</figcaption>
-          </figure>
+        <section aria-labelledby="adaptation-heading">
+          <h2 id="adaptation-heading">Domain-Specialized Experts for Efficient Adaptation</h2>
+          <section class="subsection" id="efficient-adaptation">
+            <h3>ExpertLens for efficient adaptation</h3>
+            <p></p>
+            <figure>
+              <div class="figure-placeholder" role="img" aria-label="Placeholder for a results figure">
+                <strong>Placeholder</strong>
+              </div>
+              <figcaption></figcaption>
+            </figure>
+          </section>
+          <section class="subsection" id="expert-selection">
+            <h3>Importance of expert selection</h3>
+            <p></p>
+          </section>
+          <section class="subsection" id="kimi-vl">
+            <h3>Experiments on Kimi-VL</h3>
+            <p></p>
+          </section>
         </section>
 
         <section aria-labelledby="takeaways">
-          <h2 id="takeaways">What we learned</h2>
-          <p>[Close with the larger lesson, where the method helps, and what questions remain open.]</p>
-          <!-- Add public paper and code links here when they are available. -->
+          <h2 id="takeaways">Takeaways</h2>
+          <p></p>
+         
         </section>
-
-        <footer>ExpertLens · Blog draft</footer>
       </article>
     </main>
   </div>
 
   <script>
-    const root = document.documentElement;
-    const toggle = document.getElementById('theme-toggle');
-    const progress = document.getElementById('progress');
-    // Storage may be unavailable when previewing the file directly in a browser.
-    let savedTheme;
-    try { savedTheme = localStorage.getItem('expertlens-theme'); } catch (_) { /* use system theme */ }
-    if (savedTheme === 'dark' || savedTheme === 'light') root.dataset.theme = savedTheme;
-    else if (matchMedia('(prefers-color-scheme: dark)').matches) root.dataset.theme = 'dark';
+    const route = document.querySelector('.reading-route');
+    const routeProgress = document.getElementById('route-progress');
+    const routeMarker = document.getElementById('route-marker');
+    const routeLabel = document.getElementById('route-label');
+    const stops = [...route.querySelectorAll('.route-stop')];
+    const sections = stops.map(stop => document.querySelector(stop.getAttribute('href')));
+    const routeLength = routeProgress.getTotalLength();
+    let activeStop = -1;
+    let updateQueued = false;
 
-    function updateToggle() {
-      const dark = root.dataset.theme === 'dark';
-      toggle.textContent = dark ? '☀' : '☾';
-      toggle.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+    function lengthAtX(x) {
+      let low = 0;
+      let high = routeLength;
+      for (let step = 0; step < 20; step++) {
+        const middle = (low + high) / 2;
+        if (routeProgress.getPointAtLength(middle).x < x) low = middle;
+        else high = middle;
+      }
+      return (low + high) / 2;
     }
-    toggle.addEventListener('click', () => {
-      root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
-      try { localStorage.setItem('expertlens-theme', root.dataset.theme); } catch (_) { /* keep theme for this page */ }
-      updateToggle();
-    });
-    updateToggle();
+    const stopLengths = stops.map(stop => lengthAtX(Number(stop.dataset.x)));
 
-    function updateProgress() {
-      const available = document.documentElement.scrollHeight - innerHeight;
-      progress.style.width = `${available > 0 ? Math.min(100, scrollY / available * 100) : 0}%`;
+    function updateRoute() {
+      updateQueued = false;
+      const readingPosition = scrollY + innerHeight * 0.3;
+      let current = -1;
+      for (let i = 0; i < sections.length; i++) {
+        if (readingPosition >= sections[i].getBoundingClientRect().top + scrollY) current = i;
+      }
+
+      let distance = 0;
+      if (current >= 0) {
+        const start = sections[current].getBoundingClientRect().top + scrollY;
+        const next = sections[current + 1] || document.getElementById('takeaways');
+        const end = next.getBoundingClientRect().top + scrollY;
+        const fraction = Math.max(0, Math.min(1, (readingPosition - start) / Math.max(1, end - start)));
+        distance = stopLengths[current] + fraction * ((stopLengths[current + 1] || routeLength) - stopLengths[current]);
+      }
+
+      routeProgress.style.strokeDasharray = `${distance} ${routeLength + 1}`;
+      const point = routeProgress.getPointAtLength(distance);
+      routeMarker.style.left = `${point.x / 700 * 100}%`;
+      routeMarker.style.top = `${29 + point.y * 24 / 32}px`;
+      routeMarker.style.opacity = current < 0 ? '0' : '1';
+      stops.forEach((stop, i) => {
+        stop.classList.toggle('is-passed', i <= current);
+        if (i === current) stop.setAttribute('aria-current', 'location');
+        else stop.removeAttribute('aria-current');
+      });
+      if (current !== activeStop) {
+        activeStop = current;
+        routeLabel.hidden = current < 0;
+        routeLabel.textContent = current < 0 ? '' : stops[current].dataset.title;
+      }
+      if (current >= 0) {
+        const halfLabel = routeLabel.offsetWidth / 2;
+        const center = point.x / 700 * route.clientWidth;
+        routeLabel.style.left = `${Math.max(halfLabel + 4, Math.min(route.clientWidth - halfLabel - 4, center))}px`;
+      }
     }
-    addEventListener('scroll', updateProgress, { passive: true });
-    addEventListener('resize', updateProgress);
-    updateProgress();
+
+    function queueRouteUpdate() {
+      if (updateQueued) return;
+      updateQueued = true;
+      requestAnimationFrame(updateRoute);
+    }
+    addEventListener('scroll', queueRouteUpdate, { passive: true });
+    addEventListener('resize', queueRouteUpdate);
+    addEventListener('load', queueRouteUpdate);
+    updateRoute();
   </script>
 </body>
 </html>

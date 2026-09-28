@@ -19,6 +19,7 @@
       --faint: #858585;
       --border: #e5e5e5;
       --accent: #bb551d;
+      --visual-accent: #355d73;
       --sans: 'DM Sans', 'Helvetica Neue', Arial, sans-serif;
       --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
     }
@@ -54,15 +55,16 @@
     .reading-route svg { display: block; width: 100%; height: 24px; overflow: visible; }
     .route-track, .route-progress { fill: none; stroke-linecap: round; stroke-linejoin: round; }
     .route-track { stroke: var(--border); stroke-width: 1.5; }
-    .route-progress { stroke: var(--accent); stroke-width: 1.7; stroke-dasharray: 0 1000; }
+    .route-progress { stroke: var(--visual-accent); stroke-width: 1.7; stroke-dasharray: 0 1000; }
     .route-parts { position: absolute; right: 2.57%; bottom: 4px; left: 2.57%; display: flex; justify-content: space-between; color: var(--faint); font: 10px/13px var(--mono); white-space: nowrap; }
     .route-parts span:first-child { width: 45%; text-align: center; }
     .route-parts span:last-child { width: 40%; text-align: center; }
     .route-parts::after { position: absolute; top: 1px; left: 55%; width: 1px; height: 11px; background: var(--border); content: ''; }
     .route-stop { position: absolute; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; transform: translate(-50%, -50%); }
     .route-node { width: 8px; height: 8px; border: 1.4px solid var(--faint); border-radius: 50%; background: var(--bg); transition: background .2s, border-color .2s; }
-    .route-stop.is-passed .route-node, .route-stop:hover .route-node, .route-stop:focus-visible .route-node { background: var(--accent); border-color: var(--accent); }
-    .route-marker { position: absolute; width: 11px; height: 11px; border: 2px solid var(--bg); border-radius: 50%; background: var(--accent); transform: translate(-50%, -50%); opacity: 0; pointer-events: none; }
+    .route-stop.is-passed .route-node, .route-stop:hover .route-node, .route-stop:focus-visible .route-node { background: var(--visual-accent); border-color: var(--visual-accent); }
+    .route-stop:focus-visible { outline-color: var(--visual-accent); }
+    .route-marker { position: absolute; width: 11px; height: 11px; border: 2px solid var(--bg); border-radius: 50%; background: var(--visual-accent); transform: translate(-50%, -50%); opacity: 0; pointer-events: none; }
     blockquote { margin: 28px 0; padding: 2px 0 2px 20px; border-left: 2px solid var(--accent); color: var(--muted); }
     blockquote p { margin: 8px 0; }
     figure { margin: 36px 0; }
@@ -72,6 +74,16 @@
     .figure-placeholder small { font: 12px var(--mono); }
     figure img { display: block; width: 100%; height: auto; border: 1px solid var(--border); }
     figcaption { margin-top: 10px; color: var(--faint); font-size: 13px; line-height: 1.5; }
+    .lens-film { --lens-accent: var(--visual-accent); overflow: hidden; margin: 30px 0 36px; background: var(--bg); }
+    .lens-canvas { display: block; width: 100%; height: auto; aspect-ratio: 700 / 380; }
+    .lens-caption { display: grid; min-height: 3.5em; place-items: center; margin: 0 20px 8px; color: var(--muted); font: 13px/1.5 var(--sans); text-align: center; }
+    .lens-film-controls { display: flex; align-items: center; gap: 12px; padding: 0 16px 14px; }
+    .lens-play { min-width: 62px; padding: 5px 8px; border: 1px solid var(--border); border-radius: 3px; background: var(--bg); color: var(--text); cursor: pointer; font: 11px var(--mono); }
+    .lens-play:hover { border-color: var(--lens-accent); color: var(--lens-accent); }
+    .lens-seek { flex: 1; min-width: 0; height: 3px; margin: 0; appearance: none; border-radius: 3px; background: var(--border); cursor: pointer; }
+    .lens-seek::-webkit-slider-thumb { width: 10px; height: 10px; appearance: none; border: 0; border-radius: 50%; background: var(--lens-accent); }
+    .lens-seek::-moz-range-thumb { width: 10px; height: 10px; border: 0; border-radius: 50%; background: var(--lens-accent); }
+    .lens-clock { color: var(--faint); font: 10px var(--mono); white-space: nowrap; }
     footer { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--border); color: var(--faint); font: 12px/1.6 var(--mono); }
     @media (max-width: 620px) {
       .wrap { padding: 76px 22px 60px; }
@@ -79,7 +91,10 @@
       .route-parts { font-size: 9px; }
       .route-parts::after { display: none; }
     }
-    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .route-node { transition: none; } }
+    @media (max-width: 520px) {
+      .lens-film-controls { gap: 8px; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .route-node { transition: none; } .lens-play { display: none; } }
   </style>
 </head>
 <body>
@@ -215,7 +230,17 @@
                   </section>
           <section class="subsection" id="expertlens">
             <h3>ExpertLens</h3>
-            <p></p>
+            <figure class="lens-film" id="expertlens-film" aria-label="ExpertLens weight-decoding animation">
+              <canvas class="lens-canvas" id="lens-canvas" width="700" height="380" role="img" aria-label="Illustrative animation: a Qwen3-VL decoder layer contains two RMSNorm stages, causal self-attention, residual additions, and a sparse mixture of experts. ExpertLens extracts a router-weight row without input examples, projects it through the language-model head, and shows four of five top-scoring tokens as math-related. This five-token decision is a simplified illustration of the method.">
+                ExpertLens decodes a router-weight row through the language-model head. In this simplified five-token illustration, four math-related tokens suggest a math expert.
+              </canvas>
+              <figcaption class="lens-caption">ExpertLens classifies each MLP expert directly from its router weights.</figcaption>
+              <div class="lens-film-controls">
+                <button class="lens-play" type="button" aria-label="Play ExpertLens animation">Play</button>
+                <input class="lens-seek" type="range" min="0" max="1800" value="0" aria-label="ExpertLens animation position">
+                <span class="lens-clock">0:00 / 0:18</span>
+              </div>
+            </figure>
           </section>
         </section>
 
@@ -321,6 +346,8 @@
     addEventListener('resize', queueRouteUpdate);
     addEventListener('load', queueRouteUpdate);
     updateRoute();
+
   </script>
+  <script src="static/expertlens-animation.js" defer></script>
 </body>
 </html>

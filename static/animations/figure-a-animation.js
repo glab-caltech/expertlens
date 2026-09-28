@@ -3,6 +3,7 @@
   if (!figure) return;
 
   const svg = figure.querySelector('.activation-chart');
+  const replayButton = figure.querySelector('.activation-replay');
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const ns = 'http://www.w3.org/2000/svg';
   const datasetOrder = [
@@ -28,6 +29,7 @@
   const groupLabels = [];
   let started = false;
   let startTime = null;
+  let frameId = null;
 
   const clamp = value => Math.max(0, Math.min(1, value));
   const ease = value => { const x = clamp(value); return x * x * (3 - 2 * x); };
@@ -157,17 +159,18 @@
     if (startTime === null) startTime = timestamp;
     const elapsed = Math.min(totalTime, timestamp - startTime);
     update(elapsed);
-    if (elapsed < totalTime) requestAnimationFrame(frame);
+    frameId = elapsed < totalTime ? requestAnimationFrame(frame) : null;
   }
 
-  function start() {
-    if (reducedMotion) return;
+  function start(force = false) {
+    if (reducedMotion && !force) return;
+    if (frameId !== null) cancelAnimationFrame(frameId);
     started = true;
     removeEventListener('scroll', maybeStart);
     removeEventListener('resize', maybeStart);
     startTime = null;
     update(0);
-    requestAnimationFrame(frame);
+    frameId = requestAnimationFrame(frame);
   }
 
   function maybeStart() {
@@ -184,6 +187,7 @@
     })
     .then(data => {
       build(data);
+      replayButton.disabled = false;
       if (reducedMotion) {
         update(totalTime);
       } else {
@@ -196,4 +200,6 @@
       svg.replaceChildren();
       text('Chart data could not be loaded.', 350, 255, 'activation-error-message', 'middle');
     });
+
+  replayButton.addEventListener('click', () => start(true));
 })();

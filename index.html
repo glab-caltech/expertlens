@@ -98,6 +98,10 @@
     .activation-error { fill: none; stroke: #43545c; stroke-width: .8; }
     .activation-star { fill: var(--visual-accent); font: 600 18px var(--mono); }
     .activation-error-message { fill: var(--muted); font: 13px var(--sans); }
+    .activation-controls { display: flex; justify-content: flex-end; margin-top: 8px; }
+    .activation-replay { padding: 5px 8px; border: 1px solid var(--border); border-radius: 3px; background: var(--bg); color: var(--text); cursor: pointer; font: 11px var(--mono); }
+    .activation-replay:hover { border-color: var(--visual-accent); color: var(--visual-accent); }
+    .activation-replay:disabled { opacity: .5; cursor: default; }
     footer { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--border); color: var(--faint); font: 12px/1.6 var(--mono); }
     @media (max-width: 620px) {
       .wrap { padding: 76px 22px 60px; }
@@ -272,6 +276,7 @@
                   <text class="activation-error-message" x="350" y="255" text-anchor="middle">Loading chart…</text>
                 </svg>
               </div>
+              <div class="activation-controls"><button class="activation-replay" type="button" aria-label="Replay dataset activation animation" disabled>Replay</button></div>
               <figcaption>Layer 18 of Qwen3-VL-30B-A3B. Asterisks mark the two highest-activation datasets in each expert group; similar patterns hold across layers and models.</figcaption>
             </figure>
             <p>We find medical experts are preferentially activated by medical data, math experts by math data, 
@@ -384,7 +389,7 @@
     updateRoute();
 
   </script>
-  <script src="static/expertlens-animation.js?v=2" defer></script>
-  <script src="static/figure-a-animation.js?v=1" defer></script>
+  <script src="static/animations/expertlens-animation.js?v=2" defer></script>
+  <script src="static/animations/figure-a-animation.js?v=1" defer></script>
 </body>
 </html>

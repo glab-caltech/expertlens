@@ -155,9 +155,9 @@
                 (orange) or text tokens (purple). <b>(B)</b>: Distribution of each expert’s text-token activation share. 
                 producing a bimodal distribution of modality preference. The distribution is bimodal (Hartigan dip = 0.0136, p < 0.001).</figcaption>
             </figure>
-            <p>This structure is especially clear when we look across all experts at once <b>(B)</b>. Rather than seeing a single peak 
-              around a 50/50 split, the distribution is distinctly bimodal: one group of experts is strongly image-oriented, 
-              while another is much more text-oriented. In other words, even though the model was not explicitly designed with 
+            <p>This structure is particularly visible when we consider all experts at once <b>(B)</b>. Instead of a single unimodal peak, the 
+              distribution is visibly bimodal: one group of experts is strongly image-oriented, while another peak appears to be more text-oriented.
+              This bimodality is confirmed with a Hartigan dip of 0.0136 (p < 0.001). In other words, even though the model was not explicitly designed with 
               separate “vision experts” and “language experts,” that division begins to emerge naturally during pre-training.</p>
               
               <p>The above figures show Qwen3-VL-30B-A3B. We find Gemma-4-26B-A4B is similarly bimodal, while Kimi-VL-A3B is more nearly 
@@ -169,10 +169,10 @@
                extends <b>within each modality</b>: do multimodal MoEs also organize their representations and experts around different semantic domains?</p>
             <p>We study this using datasets from three very different settings: medical imaging, mathematical reasoning, and remote sensing. We start by
               looking at the token representations that drive routing. When we project image-patch and text-token activations from these datasets, a clear 
-              difference emerges. Image representations form much tighter domain-specific clusters, while text representations are more mixed. Furthermore, datasets 
-              from the same domain often occupy similar regions, suggesting that the organization reflects broader semantic structure rather than simply 
-              individual dataset identity. We show projections from Layer 18 of Qwen3-VL-30B-A3B, but find similar structure is evident with other layers 
-              of Qwen3-VL-30B-A3B and other multimodal MoEs.
+              difference emerges. Image representations create much tighter domain-specific clusters, while text representations are generally more diffuse.
+              Furthermore, we find that datasets from the same domain often occupy similar regions, suggesting that the visible organization reflects broader 
+              semantic structure instead of individual dataset identity. We show projections from Layer 18 of Qwen3-VL-30B-A3B, but find similar structure is 
+              evident with other layers of Qwen3-VL-30B-A3B and other multimodal MoEs.
             </p>
             <figure class="modality-figure">
               <img src="static/figures/tsne.png" alt="t-SNE projections of medical, math, and remote-sensing image and text activations from Qwen3-VL." width="18524" height="6780" loading="lazy">
@@ -191,8 +191,28 @@
             </section>
           <section class="subsection" id="object-semantics">
             <h3>Specialization by object semantics</h3>
-            <p></p>
-          </section>
+            <p>The domain-level results suggest that multimodal MoEs are organized around high-level visual structure. We now ask whether this 
+              specialization goes one step further: <b>within a domain, are experts also sensitive to object-level semantics?</b> In other words, do semantically 
+              related objects tend to recruit similar experts?</p>
+              <p>To isolate semantics from dataset effects, we ran the analysis entirely within TinyImageNet. For each object class, we tracked which experts were 
+                consistently activated by its image patches, and then measured how much those expert sets overlapped between pairs of classes.</p>
+                <p>Across all class pairs, a clear trend appears: the farther apart two classes are semantically, the less their expert sets overlap. 
+                  <b>(A)</b> shows this relationship over all TinyImageNet class pairs, with "semantic distance" represented by WordNet Wu-Palmer distance.
+                  The larger the Wu-Palmer distance between two classes, the fewer the number of experts they both recruit.</p>
+                  <figure class="modality-figure">
+                    <img src="static/figures/semantic.png" alt="Two-panel figure: expert-set overlap decreases as semantic distance grows across TinyImageNet class pairs; related object pairs share more experts than unrelated pairs across layers, with example images at right." width="11325" height="3720" loading="lazy">
+                    <figcaption><b>(A)</b> Across 19,900 TinyImageNet class pairs, expert-set overlap decreases with WordNet semantic distance (Pearson r = −0.380, p &lt; 0.001). <b>(B)</b> Five related object-class pairs share more experts across layers than unrelated pairs (gray dashed line), even when their images look different. Shading shows ±1 standard deviation.</figcaption>
+                  </figure>
+                  <p><b>(B)</b> gives a more concrete view of the same pattern. We consider ten TinyImageNet classes grouped into five semantically related pairs, shown on the right.
+                  Each colored solid line corresponds to one related pair, such as a golden retriever and tabby or train and freight car, and shows how strongly their expert 
+                  sets overlap across layers. The gray dashed line is the baseline overlap for unrelated class pairs, so whenever a colored line sits above it, that semantic 
+                  pair is recruiting more similar experts than we would expect for unrelated objects. Most pairs remain well above this baseline.</p>
+                  <p>What is particularly surprising is that this is not limited to visually similar pairings. Trains and freight cars share obvious visual structure, 
+                    but <b>golden retrievers and tabbies</b>, or <b>sea slugs and jellyfish</b>, look very different and still recruit overlapping experts.</p>
+                  <p>Zooming back out, these results suggest that multimodal MoEs develop strong internal structure that spans modality preferences, domain specialization
+                    and sensitivity to finer-grained object semantics.
+                  </p>
+                  </section>
           <section class="subsection" id="expertlens">
             <h3>ExpertLens</h3>
             <p></p>

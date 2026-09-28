@@ -84,6 +84,20 @@
     .lens-seek::-webkit-slider-thumb { width: 10px; height: 10px; appearance: none; border: 0; border-radius: 50%; background: var(--lens-accent); }
     .lens-seek::-moz-range-thumb { width: 10px; height: 10px; border: 0; border-radius: 50%; background: var(--lens-accent); }
     .lens-clock { color: var(--faint); font: 10px var(--mono); white-space: nowrap; }
+    .activation-chart-viewport { overflow-x: auto; }
+    .activation-chart { display: block; width: 100%; min-width: 620px; height: auto; }
+    .activation-panel-title { fill: var(--text); font: 600 16px var(--sans); }
+    .activation-category-label { fill: var(--visual-accent); font: 500 12px var(--sans); }
+    .activation-legend, .activation-axis-title, .activation-tick { fill: var(--muted); font: 11px var(--mono); }
+    .activation-axis-title { font-size: 10px; }
+    .activation-grid { stroke: #dce5e9; stroke-width: 1; }
+    .activation-group-label { fill: var(--muted); font: 500 12px var(--sans); transition: fill .3s; }
+    .activation-group-label.is-emphasized { fill: var(--visual-accent); }
+    .activation-bar { stroke: #70838c; stroke-opacity: .23; stroke-width: .6; }
+    .activation-halo { fill: none; stroke: var(--visual-accent); stroke-width: 1.5; }
+    .activation-error { fill: none; stroke: #43545c; stroke-width: .8; }
+    .activation-star { fill: var(--visual-accent); font: 600 18px var(--mono); }
+    .activation-error-message { fill: var(--muted); font: 13px var(--sans); }
     footer { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--border); color: var(--faint); font: 12px/1.6 var(--mono); }
     @media (max-width: 620px) {
       .wrap { padding: 76px 22px 60px; }
@@ -190,7 +204,7 @@
               evident with other layers of Qwen3-VL-30B-A3B and other multimodal MoEs.
             </p>
             <figure class="modality-figure">
-              <img src="static/figures/tsne.png" alt="t-SNE projections of medical, math, and remote-sensing image and text activations from Qwen3-VL." width="18524" height="6780" loading="lazy">
+              <img src="static/figures/tsne.png" alt="t-SNE projections of medical, math, and remote sensing image and text activations from Qwen3-VL." width="18524" height="6780" loading="lazy">
               <figcaption><b>(A)</b> Layer-18 image-patch and text-token activations from six datasets, projected alongside router weights with t-SNE. 
                 <b>(B)</b> All domains together: image patches form tighter domain-specific clusters than text tokens.</figcaption>
             </figure>
@@ -251,15 +265,17 @@
               We then use those decoded tokens to decide whether an expert is associated with a target domain. The nice part is that this does not require any domain examples. ExpertLens reads 
               the specialization directly from the pretrained model weights.</p>
             <p>Now we've identified a set of experts that look domain-specialized from their weights, but do they actually behave that way on real data? To find out, we group the experts that 
-              ExpertLens labels as medical, math, or remote-sensing specialists and measure how often each group activates on datasets from those domains.</p>
-            <figure>
-              <div class="figure-placeholder" role="img" aria-label="Placeholder for a results figure">
-                <strong>Placeholder</strong>
+              ExpertLens labels as medical, math, or remote sensing specialists and measure how often each group activates on datasets from those domains.</p>
+            <figure id="expert-activation-figure" class="activation-figure">
+              <div class="activation-chart-viewport">
+                <svg class="activation-chart" viewBox="0 0 700 490" role="img" aria-label="Animated bar charts for layer 18 of Qwen3-VL-30B-A3B, showing dataset-hit ratios for text tokens and image patches across medical, math, and remote sensing expert groups. Asterisks mark the two highest bars in each group.">
+                  <text class="activation-error-message" x="350" y="255" text-anchor="middle">Loading chart…</text>
+                </svg>
               </div>
-              <figcaption></figcaption>
+              <figcaption>Layer 18 of Qwen3-VL-30B-A3B. Asterisks mark the two highest-activation datasets in each expert group; similar patterns hold across layers and models.</figcaption>
             </figure>
             <p>We find medical experts are preferentially activated by medical data, math experts by math data, 
-              and remote-sensing experts by remote-sensing data, with the clearest alignment on image patches. In other words, the semantic 
+              and remote sensing experts by remote sensing data, with the clearest alignment on image patches. In other words, the semantic 
               preferences recovered from the weights line up closely with the experts’ actual routing behavior.</p>
             </section>
         </section>
@@ -369,5 +385,6 @@
 
   </script>
   <script src="static/expertlens-animation.js?v=2" defer></script>
+  <script src="static/figure-a-animation.js?v=1" defer></script>
 </body>
 </html>

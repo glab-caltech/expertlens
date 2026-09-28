@@ -91,13 +91,13 @@
           <div class="meta">
             <div class="authors" aria-label="Authors">
               <div class="author-row">
-                <a href="https://damianomarsili.github.io/"><img src="static/pictures/people/damiano.jpeg" alt="" width="48" height="48"><span><span class="author-name">Damiano Marsili</span><sup>*</sup></span></a>
-                <a href="https://www.raphikang.com/"><img src="static/pictures/people/raphi.png" alt="" width="48" height="48"><span><span class="author-name">Raphi Kang</span><sup>*</sup></span></a>
-                <a href="https://aditya-mehta1.github.io/"><img src="static/pictures/people/aditya.webp" alt="" width="48" height="48"><span class="author-name">Aditya Mehta</span></a>
+                <a href="https://damianomarsili.github.io/"><img src="static/people/damiano.jpeg" alt="" width="48" height="48"><span><span class="author-name">Damiano Marsili</span><sup>*</sup></span></a>
+                <a href="https://www.raphikang.com/"><img src="static/people/raphi.png" alt="" width="48" height="48"><span><span class="author-name">Raphi Kang</span><sup>*</sup></span></a>
+                <a href="https://aditya-mehta1.github.io/"><img src="static/people/aditya.webp" alt="" width="48" height="48"><span class="author-name">Aditya Mehta</span></a>
               </div>
               <div class="author-row">
-                <a href="https://www.vision.caltech.edu/"><img src="static/pictures/people/pietro.png" alt="" width="48" height="48"><span class="author-name">Pietro Perona</span></a>
-                <a href="https://georgiagkioxari.com/"><img src="static/pictures/people/georgia.png" alt="" width="48" height="48"><span class="author-name">Georgia Gkioxari</span></a>
+                <a href="https://www.vision.caltech.edu/"><img src="static/people/pietro.png" alt="" width="48" height="48"><span class="author-name">Pietro Perona</span></a>
+                <a href="https://georgiagkioxari.com/"><img src="static/people/georgia.png" alt="" width="48" height="48"><span class="author-name">Georgia Gkioxari</span></a>
               </div>
             </div>
             <p class="contribution-note">* equal contribution</p>
@@ -150,7 +150,7 @@
                 purple showing text-token activations. Across layers, experts are rarely perfectly balanced—instead, 
                 many lean strongly toward either vision or language.</p>
             <figure class="modality-figure">
-              <img src="static/pictures/figures/modality.png" alt="Modality specialization of Qwen3-VL." width="13915" height="4389" loading="lazy">
+              <img src="static/figures/modality.png" alt="Modality specialization of Qwen3-VL." width="13915" height="4389" loading="lazy">
               <figcaption><b>(A)</b>: Modality specialization in Qwen3-VL-30B-A3B. Experts across layers favor image patches 
                 (orange) or text tokens (purple). <b>(B)</b>: Distribution of each expert’s text-token activation share. 
                 producing a bimodal distribution of modality preference. The distribution is bimodal (Hartigan dip = 0.0136, p < 0.001).</figcaption>
@@ -175,7 +175,7 @@
               of Qwen3-VL-30B-A3B and other multimodal MoEs.
             </p>
             <figure class="modality-figure">
-              <img src="static/pictures/figures/tsne.png" alt="t-SNE projections of medical, math, and remote-sensing image and text activations from Qwen3-VL." width="18524" height="6780" loading="lazy">
+              <img src="static/figures/tsne.png" alt="t-SNE projections of medical, math, and remote-sensing image and text activations from Qwen3-VL." width="18524" height="6780" loading="lazy">
               <figcaption><b>(A)</b> Layer-18 image-patch and text-token activations from six datasets, projected alongside router weights with t-SNE. 
                 <b>(B)</b> All domains together: image patches form tighter domain-specific clusters than text tokens.</figcaption>
             </figure>
@@ -184,7 +184,7 @@
             <p>For image patches, representations are organized much more strongly by dataset than by simple visual properties such as average color or spatial patch position. 
               Text tokens show a different pattern: their representations align more strongly with linguistic structure, such as part of speech, than with dataset identity.</p>  
               <figure class="modality-figure">
-              <img src="static/pictures/figures/knn_purity.png" alt="Nearest-neighbor purity across layers for Qwen3-VL and Kimi-VL. Text tokens align more with part of speech, while image patches align more with dataset than color or patch position." width="8610" height="3020" loading="lazy">
+              <img src="static/figures/knn_purity.png" alt="Nearest-neighbor purity across layers for Qwen3-VL and Kimi-VL. Text tokens align more with part of speech, while image patches align more with dataset than color or patch position." width="8610" height="3020" loading="lazy">
               <figcaption>Nearest-neighbor purity across layers in Qwen3-VL-30B-A3B and Kimi-VL-A3B. Text tokens cluster most strongly by part of speech; image patches cluster more by dataset than by color or spatial position. Curves show different numbers of neighbors (k).</figcaption>
             </figure>
             <p>Together, these results point to a particularly strong <b>domain-level organization</b> in the visual representations of multimodal MoEs.</p>

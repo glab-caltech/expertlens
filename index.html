@@ -145,6 +145,12 @@
     .selection-replay:disabled { opacity: .5; cursor: default; }
     .takeaway-links { line-height: 1.8; }
     footer { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--border); color: var(--faint); font: 12px/1.6 var(--mono); }
+    .citation-box { position: relative; margin: 0 0 20px; padding: 16px 18px; border: 1px solid var(--border); border-radius: 3px; background: var(--surface); }
+    .citation-box pre { margin: 0; padding-right: 72px; overflow-x: auto; color: var(--text); font: 12.5px/1.6 var(--mono); white-space: pre; }
+    .citation-copy { position: absolute; top: 10px; right: 10px; padding: 5px 8px; border: 1px solid var(--border); border-radius: 3px; background: var(--bg); color: var(--text); cursor: pointer; font: 11px var(--mono); }
+    .citation-copy:hover { border-color: var(--visual-accent); color: var(--visual-accent); }
+    .citation-copy.is-copied { border-color: var(--visual-accent); background: var(--visual-accent); color: #fff; }
+    .citation-note { margin: -10px 0 20px; color: var(--faint); font-size: 13px; }
     @media (max-width: 620px) {
       .wrap { padding: 76px 22px 60px; }
       .figure-placeholder { min-height: 210px; }
@@ -333,9 +339,8 @@
 
         <section aria-labelledby="adaptation-heading">
           <h2 id="adaptation-heading">Domain-Specialized Experts for Efficient Adaptation</h2>
-          <p>So far, we’ve mostly treated this structure as something to understand. But if the experts are specialized by domain, 
-            can we actually <b>use that specialization to adapt the model more efficiently?</b></p>
-            <p>We test this by adapting a single Qwen3-VL-30B-A3B model sequentially across three domains: math, medical, and remote sensing. 
+          <p>Up to this point, we've mostly treated the internal structure of MoEs as something to understand. Now, given our understanding that experts are <i>emergently</i> specialized by domain, we wonder if we can <b>use that specialization to adapt the model more efficiently?</b></p>
+            <p>We test this by adapting a single Qwen3-VL-30B-A3B model sequentially across three domains: math, medical, and remote sensing (same as before). 
               Rather than resetting back to the pretrained model each time, we keep adapting the same model from one domain to the next. This gives 
               us a setting where the model has to repeatedly pick up new domain-specific behavior, while letting us compare different ways of deciding 
               which parameters to update. Our goal is to understand: if we update only the experts that already look relevant to a domain, can we match 
@@ -346,7 +351,7 @@
               parameter-efficient baseline. All methods use the same data, training objective, and sequential adaptation setup.</p>
           <section class="subsection" id="efficient-adaptation">
             <h3>ExpertLens for efficient adaptation</h3>
-            <p>We start with the main comparison: ExpertLens versus full fine-tuning and LoRA. The first thing to notice is that selectively updating 
+            <p>Results of comparing ExpertLens to full fine-tuning and LoRA are promising! The first thing to notice is that selectively updating 
               the experts identified by ExpertLens does not come at the cost of adaptation quality. Across math, medical, and remote sensing, ExpertLens 
               matches or slightly surpasses full fine-tuning, while LoRA consistently trails behind.</p>
               <p>The animation below plays the three methods at their measured training wall-clock speeds. The top row tracks 
@@ -368,14 +373,14 @@
               </div>
               <figcaption>Accuracy during sequential training on math, medical, and remote sensing data. Playback speed illustrates the methods’ relative wall-clock training times. Each shaded bottom panel shows in-domain accuracy during the same-colored training stage in the top plots; its curves begin when that method reaches the stage. Translucent bands around the curves show 95% confidence intervals.</figcaption>
             </figure>
-            <p>The speedup is substantial. Compared with full fine-tuning, ExpertLens is 3.2× faster on math, 4.0× faster on medical, and 
+            <p>We see that ExpertLens delivers a substantial speedup in training time. Compared with full fine-tuning, ExpertLens is 3.2× faster on math, 4.0× faster on medical, and 
               4.8× faster on remote sensing, for a 4.0× average speedup across the three domains. It is also 2.9× faster than LoRA, 
               while reaching higher accuracy.</p>
-            <p>By leveraging the emergent structure of multimodal MoEs, we are able to match the performance of full fine-tuning at substantially reduced cost.</p>
+            <p>This means that, by leveraging the emergent structure of multimodal MoEs, we can match the performance of full fine-tuning at substantially reduced cost. This is exciting!</p>
           </section>
           <section class="subsection" id="expert-selection">
             <h3>Importance of expert selection</h3>
-            <p>The previous experiment shows that updating fewer experts can work well, but it does not tell us whether it matters which experts we choose. To
+            <p>In the previous experiment we saw that updating fewer experts can work well, but is it possible that we would have seen the same speedup and performance without going through the ExpertLens selection process? To
               explore the importance of selecting the right experts, we compare ExpertLens against random expert subsets with exactly the same expert budget.
             </p>
             <p>We use two random baselines. <i>Random (full)</i> samples the same number of experts from the entire expert pool, while <i>Random (disjoint)</i> samples only 
@@ -397,22 +402,32 @@
               </div>
               <figcaption>ExpertLens outperforms matched-budget random selection baselines, indicating that the identity of the updated experts is important for selective adaptation.</figcaption>
             </figure>
-            <p>The clearest result comes from <i>Random (full)</i>. Even though it updates the same number of experts, it consistently falls behind ExpertLens, especially on math and medical. The benefit is 
-              not just coming from sparse fine-tuning, the experts we update seem to matter. <i>Random (disjoint)</i> is a bit more interesting. On math, it can keep up with ExpertLens, which tells us there is some 
-              redundancy in the model and more than one subset of experts can work. But on medical and remote sensing it falls behind. Overall, the picture is that sparse adaptation helps, but picking experts 
-              that are already aligned with the target domain helps more.</p>
+            <p>With <i>Random (full)</i>, we can immediately see that even though it updates the same number of experts, it consistently falls behind ExpertLens, especially on math and medical. This tells us that the benefit of ExpertLens training is 
+              not just coming from sparse fine-tuning. Instead, the experts we update seem to matter. <i>Random (disjoint)</i> is a bit more interesting. On math, it can keep up with ExpertLens, which tells us there is some 
+              redundancy in the model and more than one subset of experts can work. But on medical and remote sensing it still falls behind the ExpertLens selection. Overall, the picture is that sparse adaptation helps, but picking experts 
+              that are already aligned with the target domain gets us the biggest bang for our buck.</p>
           </section>
         </section>
         <section aria-labelledby="takeaways">
           <h2 id="takeaways">Takeaways</h2>
-          <p>The main thing we learned is that multimodal MoEs are much more organized internally than they might first appear. Even though they are trained 
-            simply to route tokens efficiently, their experts develop meaningful specialization across modalities, domains, and even individual visual concepts.</p>
-          <p>That structure is also useful. With ExpertLens, we can recover domain-specialized experts directly from the pretrained weights, without needing examples 
+          <p>The main takeaway from this post is that multimodal MoEs are much more organized internally than they might first appear. Even though their training objective was to route tokens efficiently, their experts develop meaningful specialization across modalities, domains, and even individual visual concepts.
+          <p>Once we understand this structure, we can take advantage of it. With ExpertLens, we can recover domain-specialized experts directly from the pretrained weights, without needing examples 
             from the target domain. And once we know where that specialization lives, we can use it for adaptation: updating only the relevant experts is enough to 
             match full fine-tuning while cutting training time substantially.</p>
-          <p>More broadly, we are excited at the prospect of designing algorithms that build upon properties of architectures. In multimodal MoEs, sparsity induces a natrual 
+          <p>More broadly, we're excited at the prospect of designing algorithms that build upon properties of model architectures. In multimodal MoEs, sparsity induces a natrual 
             modularity, and ExpertLens is one example of what becomes possible when the adaptation method is designed around that architectural property.
           </p>
+          <p>(P.s. If you found this post interesting, please consider citing our paper:)!  )</p>
+          <div class="citation-box">
+            <button class="citation-copy" type="button" aria-label="Copy BibTeX citation">Copy</button>
+<pre id="citation-bibtex">@article{marsili2026expertlens,
+  title   = {Harnessing Domain Specialists in Multimodal Mixture-of-Experts for Efficient Adaptation},
+  author  = {Marsili, Damiano and Kang, Raphi and Mehta, Aditya and Perona, Pietro and Gkioxari, Georgia},
+  journal = {arXiv preprint arXiv:COMINGSOON},
+  year    = {2026}
+}</pre>
+          </div>
+          <p class="citation-note">The paper is not on arxiv yet, but will be soon. Please check back soon!</p>
           <p class="takeaway-links"><a href="#">Paper</a><br>
             <a href="https://github.com/damianomarsili/ExpertLens">Code</a></p>
         </section>
@@ -492,6 +507,38 @@
     addEventListener('load', queueRouteUpdate);
     updateRoute();
 
+  </script>
+  <script>
+    (() => {
+      const button = document.querySelector('.citation-copy');
+      const bibtex = document.getElementById('citation-bibtex');
+      if (!button || !bibtex) return;
+      let resetTimer = null;
+      function done(ok) {
+        button.textContent = ok ? 'Copied' : 'Select & copy';
+        button.classList.toggle('is-copied', ok);
+        clearTimeout(resetTimer);
+        resetTimer = setTimeout(() => { button.textContent = 'Copy'; button.classList.remove('is-copied'); }, 1800);
+      }
+      button.addEventListener('click', async () => {
+        const text = bibtex.textContent;
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(text);
+            done(true);
+            return;
+          }
+        } catch (error) { /* fall through to selection fallback */ }
+        const range = document.createRange();
+        range.selectNodeContents(bibtex);
+        const selection = getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        let ok = false;
+        try { ok = document.execCommand('copy'); } catch (error) { ok = false; }
+        done(ok);
+      });
+    })();
   </script>
   <script src="static/animations/expertlens-animation.js?v=3" defer></script>
   <script src="static/animations/figure-a-animation.js?v=2" defer></script>

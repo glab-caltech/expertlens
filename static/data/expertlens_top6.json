@@ -1,0 +1,138 @@
+{
+ "model": "Qwen/Qwen3-VL-30B-A3B-Instruct",
+ "layer": 18,
+ "source": "expertlens_highlight.png",
+ "note": "fraction = colored share of the bar above each image in the source figure (share of that image's patches routed to the expert).",
+ "experts": [
+  {
+   "expert": 121,
+   "domain": "medicine",
+   "name": "Medical expert",
+   "color": "#238CC4",
+   "shade": "#8AC4E8",
+   "tokens": [
+    "基因 (gene)",
+    "DNA",
+    "genome",
+    "mRNA",
+    "genes",
+    "phenotype",
+    "genotype",
+    "mutations",
+    "genetic"
+   ],
+   "images": [
+    {
+     "file": "E121_0.png",
+     "fraction": 0.616
+    },
+    {
+     "file": "E121_1.png",
+     "fraction": 0.598
+    },
+    {
+     "file": "E121_2.png",
+     "fraction": 0.584
+    },
+    {
+     "file": "E121_3.png",
+     "fraction": 0.566
+    },
+    {
+     "file": "E121_4.png",
+     "fraction": 0.571
+    },
+    {
+     "file": "E121_5.png",
+     "fraction": 0.566
+    }
+   ]
+  },
+  {
+   "expert": 76,
+   "domain": "math",
+   "name": "Math expert",
+   "color": "#E91E63",
+   "shade": "#FFCBE1",
+   "tokens": [
+    "decimal",
+    "数学 (mathematics)",
+    "Decimal",
+    "algebra",
+    "Algebra",
+    "Math",
+    "decimals"
+   ],
+   "images": [
+    {
+     "file": "E76_0.png",
+     "fraction": 0.776
+    },
+    {
+     "file": "E76_1.png",
+     "fraction": 0.757
+    },
+    {
+     "file": "E76_2.png",
+     "fraction": 0.616
+    },
+    {
+     "file": "E76_3.png",
+     "fraction": 0.532
+    },
+    {
+     "file": "E76_4.png",
+     "fraction": 0.53
+    },
+    {
+     "file": "E76_5.png",
+     "fraction": 0.486
+    }
+   ]
+  },
+  {
+   "expert": 93,
+   "domain": "remote_sensing",
+   "name": "Remote-sensing expert",
+   "color": "#E67E22",
+   "shade": "#F8D2A0",
+   "tokens": [
+    "vegetation",
+    "植被 (vegetation)",
+    "降水 (precipitation)",
+    "rainfall",
+    "terrain",
+    "降雨 (rainfall)",
+    "景色 (scenery)",
+    "land",
+    "山水 (landscape)"
+   ],
+   "images": [
+    {
+     "file": "E93_0.png",
+     "fraction": 0.67
+    },
+    {
+     "file": "E93_1.png",
+     "fraction": 0.644
+    },
+    {
+     "file": "E93_2.png",
+     "fraction": 0.642
+    },
+    {
+     "file": "E93_3.png",
+     "fraction": 0.639
+    },
+    {
+     "file": "E93_4.png",
+     "fraction": 0.638
+    },
+    {
+     "file": "E93_5.png",
+     "fraction": 0.635
+    }
+   ]
+  }
+ ]
+}

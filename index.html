@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/interactive_visuals/interactive-figures.css?v=4">
   <style>
     :root {
       color-scheme: light;
@@ -48,6 +49,8 @@
     h3 { margin: 28px 0 12px; font-size: 17px; }
     .overview h2 { margin-top: 0; }
     .intro-emphasis { color: var(--muted); text-decoration: underline; text-decoration-color: var(--faint); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+    a.intro-emphasis { color: var(--muted); }
+    a.intro-emphasis:hover { color: var(--accent); text-decoration-color: var(--accent); }
     .subsection { scroll-margin-top: 94px; }
     .lead { font-size: 18px; line-height: 1.6; }
     .reading-route { position: sticky; top: 0; z-index: 8; height: 76px; margin: 32px 0 24px; padding: 29px 0 0; background: var(--bg); border-bottom: 1px solid var(--border); }
@@ -160,9 +163,9 @@
 
         <section class="overview" aria-labelledby="overview-heading">
           <p>In this post, we’ll take a closer look at the internal structure of multimodal Mixture-of-Experts (MoE) models. We’ll start by asking whether their
-            experts naturally organize themselves around <span class="intro-emphasis">different modalities</span>, <span class="intro-emphasis">semantic domains</span>, and even <span class="intro-emphasis">finer-grained visual concepts.</span> We’ll then look at how
-            that structure can be <span class="intro-emphasis">uncovered from the model itself</span>, without needing to probe it with domain-specific data. Finally, we’ll show how this emergent
-            modularity can be put to practical use, using it to <span class="intro-emphasis">adapt multimodal MoEs more efficiently</span> by updating the experts that matter most for a new domain.</p>
+            experts naturally organize themselves around <a class="intro-emphasis" href="#modality">different modalities</a>, <a class="intro-emphasis" href="#domain-specificity">semantic domains</a>, and even <a class="intro-emphasis" href="#object-semantics">finer-grained visual concepts.</a> We’ll then look at how
+            that structure can be <a class="intro-emphasis" href="#expertlens">uncovered from the model itself</a>, without needing to probe it with domain-specific data. Finally, we’ll show how this emergent
+            modularity can be put to practical use, using it to <a class="intro-emphasis" href="#efficient-adaptation">adapt multimodal MoEs more efficiently</a> by updating the experts that matter most for a new domain.</p>
         </section>
 
         <nav class="reading-route" aria-label="Journey through the paper">
@@ -184,59 +187,55 @@
 
         <section aria-labelledby="structure-heading">
           <h2 id="structure-heading">Emergent Structure in Mixture-of-Experts VLMs</h2>
-          <p>We begin by asking a simple question: do pre-trained multimodal MoEs develop meaningful 
-            internal structure? To explore this, we look at expert specialization 
-            at three increasingly fine-grained levels: first across modalities, then across 
-            semantic domains, and finally across individual visual concepts. We find that this 
-            organization appears surprisingly consistently, suggesting that the experts are far 
-            from interchangeable. We close this section by introducing ExpertLens, a way to uncover 
+          <p>Let's start by asking a simple question: <b><i>Do pre-trained multimodal MoEs develop meaningful 
+            internal structure?</i></b> To explore this, we look at expert specialization 
+            at three increasingly fine-grained levels: first across <b>modalities</b>, then across <b>semantic domains</b>, and finally across <b>individual visual concepts</b>. We find that this
+            organization appears surprisingly consistently, suggesting that experts are far 
+            from interchangeable. We close this section by introducing <a class="intro-emphasis" href="#expertlens">ExpertLens</a>, a way to uncover 
             this structure directly from the model’s pretrained weights, without needing any 
             domain-specific data.</p>
           <section class="subsection" id="modality">
             <h3>Specialization by modality</h3>
-            <p>We start with the most basic distinction in a multimodal model: <b>vision versus language</b>. 
+            <p>We'll start with the most basic distinction in a multimodal model: <b>vision versus language</b>. 
               Since the same MoE layers process both image patches and text tokens, we asked whether 
               individual experts treat these two modalities differently, or whether they are used 
               more or less interchangeably.</p>
-              <p>To test this, we measured how often each expert was activated by image patches versus text tokens. 
-                The pattern is striking: many experts show a clear preference for one modality or the other. In the 
+              <p>To test this, we can look at how often each expert was activated by image patches versus text tokens when an equal number of both is fed to the model. 
+                For <a class="intro-emphasis" href="https://arxiv.org/abs/2505.09388v1">Qwen3-VL-30B-A3B</a>, many experts show a clear preference for one modality or the other. In the 
                 figure below, each vertical bar represents an expert, with orange showing image-patch activations and 
-                purple showing text-token activations. Across layers, experts are rarely perfectly balanced—instead, 
-                many lean strongly toward either vision or language.</p>
-            <figure class="modality-figure">
+                purple showing text-token activations. Across layers, experts are rarely perfectly balanced. Many lean strongly toward either vision or language.</p>
+            <figure class="modality-figure" id="modality-divide-figure">
               <img src="static/figures/modality.png" alt="Modality specialization of Qwen3-VL." width="13915" height="4389" loading="lazy">
               <figcaption><b>(A)</b>: Modality specialization in Qwen3-VL-30B-A3B. Experts across layers favor image patches 
-                (orange) or text tokens (purple). <b>(B)</b>: Distribution of each expert’s text-token activation share. 
+                (orange) or text tokens (purple). Move the slider to view a different layer. <b>(B)</b>: Distribution of each expert’s text-token activation share. 
                 producing a bimodal distribution of modality preference. The distribution is bimodal (Hartigan dip = 0.0136, p < 0.001).</figcaption>
             </figure>
-            <p>This structure is particularly visible when we consider all experts at once <b>(B)</b>. Instead of a single unimodal peak, the 
+            <p>This structure is particularly visible when we consider all experts at once <b>(B)</b>. Instead of a single unimodal peak for modality preference, the 
               distribution is visibly bimodal: one group of experts is strongly image-oriented, while another peak appears to be more text-oriented.
               This bimodality is confirmed with a Hartigan dip of 0.0136 (p < 0.001). In other words, even though the model was not explicitly designed with 
-              separate “vision experts” and “language experts,” that division begins to emerge naturally during pre-training.</p>
+              separate "vision experts" and "language experts", that division begins to emerge naturally during pre-training.</p>
               
-              <p>The above figures show Qwen3-VL-30B-A3B. We find Gemma-4-26B-A4B is similarly bimodal, while Kimi-VL-A3B is more nearly 
-                unimodal, likely due to its smaller expert pool.</p>
+              <p>(The above figures show Qwen3-VL-30B-A3B. We find <a class="intro-emphasis" href="https://arxiv.org/abs/2607.02770">Gemma-4-26B-A4B</a> is similarly bimodal, while <a class="intro-emphasis" href="https://arxiv.org/abs/2504.07491">Kimi-VL-A3B</a> is more nearly 
+                unimodal, likely due to its smaller expert pool.)</p>
           </section>
           <section class="subsection" id="domain-specificity">
             <h3>Specialization by domain</h3>
-            <p>The modality results show that experts are not used interchangeably across vision and language. We next ask whether this specialization
+            <p>So far we have seen that experts are not used interchangeably across vision and language. We next ask whether this specialization
                extends <b>within each modality</b>: do multimodal MoEs also organize their representations and experts around different semantic domains?</p>
             <p>We study this using datasets from three very different settings: medical imaging, mathematical reasoning, and remote sensing. We start by
-              looking at the token representations that drive routing. When we project image-patch and text-token activations from these datasets, a clear 
-              difference emerges. Image representations create much tighter domain-specific clusters, while text representations are generally more diffuse.
-              Furthermore, we find that datasets from the same domain often occupy similar regions, suggesting that the visible organization reflects broader 
-              semantic structure instead of individual dataset identity. We show projections from Layer 18 of Qwen3-VL-30B-A3B, but find similar structure is 
-              evident with other layers of Qwen3-VL-30B-A3B and other multimodal MoEs.
+              looking at the token representations that drive routing. When we reduce the dimensionality of image-patch and text-token activations from these datasets through a t-SNE projection, we see some clear, interesting patterns. First, image representations create much tighter domain-specific clusters, while text representations are generally more diffuse.
+              Further, we can see that datasets from the same domain often neighbor each other in the t-SNE projection. This suggests the visible organization reflects broader 
+              semantic structure instead of individual dataset identity. Below we include an interactive projection from Layer 18 of Qwen3-VL-30B-A3B, but we can find similar latent structure in other layers of Qwen3-VL-30B-A3B and other multimodal MoEs.
             </p>
-            <figure class="modality-figure">
-              <img src="static/figures/tsne.png" alt="t-SNE projections of medical, math, and remote sensing image and text activations from Qwen3-VL." width="18524" height="6780" loading="lazy">
+            <figure class="modality-figure" id="tsne-domains-figure">
+              <img src="static/figures/t-SNE.png" alt="t-SNE projections of medical, math, and remote sensing image and text activations from Qwen3-VL." width="18524" height="6780" loading="lazy">
               <figcaption><b>(A)</b> Layer-18 image-patch and text-token activations from six datasets, projected alongside router weights with t-SNE. 
-                <b>(B)</b> All domains together: image patches form tighter domain-specific clusters than text tokens.</figcaption>
+                <b>(B)</b> All domains together: image patches form tighter domain-specific clusters than text tokens. You can toggle different datasets to see them projected onto the t-SNE map.</figcaption>
             </figure>
-            <p>To characterize this organization more systematically, we measure the local structure of the representation space using nearest-neighbor purity. 
-              This lets us ask not only whether representations cluster, but what properties best explain that clustering.</p>
+            <p>To characterize this organization more systematically, we can measure the local structure of the representation space using nearest-neighbor purity. Basically, we want to see whether grouping by semantic category, versus low-level image or text statistics, results in a better explanation of the organization of intermediate image-patch and text-token activations.
+            </p>
             <p>For image patches, representations are organized much more strongly by dataset than by simple visual properties such as average color or spatial patch position. 
-              Text tokens show a different pattern: their representations align more strongly with linguistic structure, such as part of speech, than with dataset identity.</p>  
+              On the other hand, we found that text tokens' representations align more strongly with linguistic structure, such as part of speech, than with dataset identity.</p>  
               <figure class="modality-figure">
               <img src="static/figures/knn_purity.png" alt="Nearest-neighbor purity across layers for Qwen3-VL and Kimi-VL. Text tokens align more with part of speech, while image patches align more with dataset than color or patch position." width="8610" height="3020" loading="lazy">
               <figcaption>Nearest-neighbor purity across layers in Qwen3-VL-30B-A3B and Kimi-VL-A3B. Text tokens cluster most strongly by part of speech; image patches cluster more by dataset than by color or spatial position. Curves show different numbers of neighbors (k).</figcaption>
@@ -245,15 +244,15 @@
             </section>
           <section class="subsection" id="object-semantics">
             <h3>Specialization by object semantics</h3>
-            <p>The domain-level results suggest that multimodal MoEs are organized around high-level visual structure. We now ask whether this 
-              specialization goes one step further: <b>within a domain, are experts also sensitive to object-level semantics?</b> In other words, do semantically 
+            <p>The domain-level results suggest that multimodal MoEs are organized around high-level visual structure. Now we can ask whether this specialization goes one step further: within a domain, are experts also sensitive to <b>object-level semantics?</b> In other words, do semantically 
               related objects tend to recruit similar experts?</p>
-              <p>To isolate semantics from dataset effects, we ran the analysis entirely within TinyImageNet. For each object class, we tracked which experts were 
-                consistently activated by its image patches, and then measured how much those expert sets overlapped between pairs of classes.</p>
-                <p>Across all class pairs, a clear trend appears: the farther apart two classes are semantically, the less their expert sets overlap. 
+
+              <p>To isolate semantics from dataset effects, we ran the analysis entirely within TinyImageNet. For each object class, we tracked which experts were consistently activated by its image patches. We then measured how much those expert sets overlapped between pairs of classes. We represent the degree of "expert overlap" betwee object classes as Z(a,b).</p>
+
+                <p>Across all class pairs, we can see a clear pattern: the farther apart two classes are semantically, the less their expert sets overlap. 
                   <b>(A)</b> shows this relationship over all TinyImageNet class pairs, with "semantic distance" represented by WordNet Wu-Palmer distance.
                   The larger the Wu-Palmer distance between two classes, the fewer the number of experts they both recruit.</p>
-                  <figure class="modality-figure">
+                  <figure class="modality-figure" id="semantic-pairs-figure">
                     <img src="static/figures/semantic.png" alt="Two-panel figure: expert-set overlap decreases as semantic distance grows across TinyImageNet class pairs; related object pairs share more experts than unrelated pairs across layers, with example images at right." width="11325" height="3720" loading="lazy">
                     <figcaption><b>(A)</b> Across 19,900 TinyImageNet class pairs, expert-set overlap decreases with WordNet semantic distance (Pearson r = −0.380, p &lt; 0.001). <b>(B)</b> Five related object-class pairs share more experts across layers than unrelated pairs (gray dashed line), even when their images look different. Shading shows ±1 standard deviation.</figcaption>
                   </figure>
@@ -262,9 +261,9 @@
                   sets overlap across layers. The gray dashed line is the baseline overlap for unrelated class pairs, so whenever a colored line sits above it, that semantic 
                   pair is recruiting more similar experts than we would expect for unrelated objects. Most pairs remain well above this baseline.</p>
                   <p>What is particularly surprising is that this is not limited to visually similar pairings. Trains and freight cars share obvious visual structure, 
-                    but <b>golden retrievers and tabbies</b>, or <b>sea slugs and jellyfish</b>, look very different and still recruit overlapping experts.</p>
-                  <p>Zooming back out, these results suggest that multimodal MoEs develop strong internal structure that spans modality preferences, domain specialization
-                    and sensitivity to finer-grained object semantics.
+                    but golden retrievers and tabbies, or sea slugs and jellyfish, look very different and still recruit overlapping experts.</p>
+                  <p>Zooming back out, these results suggest that multimodal MoEs develop strong internal structure that spans <b>modality preferences</b>, distinct <b>domain specialization</b>,
+                    and sensitivity to <b>finer-grained object semantics</b>.
                   </p>
                   </section>
           <section class="subsection" id="expertlens">
@@ -272,8 +271,8 @@
             <p>So far, we’ve found specialization by looking at how experts respond to data. But if we want to actually use this structure for adaptation, 
               it would be much more useful to identify the relevant experts from the pretrained model itself, without first needing a representative dataset from 
               all the domains we might want to adapt to.</p>
-              <p>This is the idea behind our method, ExpertLens. ExpertLens recovers expert semantics directly from pretrained weights by decoding router
-                 weights into semantically meaningful vocabulary tokens. We illustrate our method in the animation below. </p>
+              <p>This is the idea behind our method, <b>ExpertLens</b>. ExpertLens recovers expert semantics directly from pretrained weights by decoding router
+                 weights into semantically meaningful vocabulary tokens, <i>a la</i> the logit lens. We illustrate our method in the animation below. </p>
             <figure class="lens-film" id="expertlens-film" aria-label="ExpertLens weight-decoding animation">
               <canvas class="lens-canvas" id="lens-canvas" width="700" height="380" role="img" aria-label="Illustrative animation: a Qwen3-VL decoder layer contains two RMSNorm stages, causal self-attention, residual additions, and a sparse mixture of experts. ExpertLens extracts a router-weight row without input examples, projects it through the language-model head, and shows four of five top-scoring tokens as math-related. This five-token decision is a simplified illustration of the method.">
                 ExpertLens decodes a router-weight row through the language-model head. In this simplified five-token illustration, four math-related tokens suggest a math expert.
@@ -299,6 +298,10 @@
               </div>
               <div class="activation-controls"><button class="activation-replay" type="button" aria-label="Replay dataset activation animation" disabled>Replay</button></div>
               <figcaption>Layer 18 of Qwen3-VL-30B-A3B. Asterisks mark the two highest-activation datasets in each expert group; similar patterns hold across layers and models.</figcaption>
+            </figure>
+            <figure class="modality-figure" id="expertlens-top6-figure">
+              <img src="static/interactive_visuals/expertlens_highlight.png" alt="Three ExpertLens-labelled experts from layer 18 of Qwen3-VL-30B-A3B (E121 medical, E76 math, E93 remote sensing) with their decoded vocabulary tokens and the six images whose patches most often routed to each expert." loading="lazy">
+              <figcaption>Three experts from layer 18 of Qwen3-VL-30B-A3B that ExpertLens labels as medical (E121), math (E76), and remote sensing (E93), with the vocabulary tokens decoded from their router weights and the six images whose patches most often routed to each expert.</figcaption>
             </figure>
             <p>We find medical experts are preferentially activated by medical data, math experts by math data, 
               and remote sensing experts by remote sensing data, with the clearest alignment on image patches. In other words, the semantic 
@@ -423,5 +426,13 @@
   <script src="static/animations/expertlens-animation.js?v=3" defer></script>
   <script src="static/animations/figure-a-animation.js?v=2" defer></script>
   <script src="static/animations/continual-training-animation.js?v=6" defer></script>
+  <script src="static/data/modality_divide_qwen.js" defer></script>
+  <script src="static/data/semantic_pairs_qwen.js" defer></script>
+  <script src="static/data/tsne_embedding_L18.js" defer></script>
+  <script src="static/data/expertlens_top6.js" defer></script>
+  <script src="static/interactive_visuals/modality-divide.js?v=4" defer></script>
+  <script src="static/interactive_visuals/tsne-domains.js?v=2" defer></script>
+  <script src="static/interactive_visuals/semantic-pairs.js?v=3" defer></script>
+  <script src="static/interactive_visuals/expertlens-top6.js?v=2" defer></script>
 </body>
 </html>

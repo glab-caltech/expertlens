@@ -1,0 +1,96 @@
+/* Shared styling for the interactive figures (modality divide, t-SNE, semantic pairs). */
+.iv-figure { position: relative; }
+.iv-hidden { display: none !important; }
+.iv-chart { display: block; width: 100%; height: auto; }
+.iv-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 8px; color: var(--muted); font: 11px var(--mono); }
+.iv-controls .iv-spacer { flex: 1; }
+.iv-btn { padding: 5px 8px; border: 1px solid var(--border); border-radius: 3px; background: var(--bg); color: var(--text); cursor: pointer; font: 11px var(--mono); }
+.iv-btn:hover { border-color: var(--visual-accent); color: var(--visual-accent); }
+.iv-btn.is-active { border-color: var(--visual-accent); background: var(--visual-accent); color: #fff; }
+.iv-btn:disabled { opacity: .5; cursor: default; }
+.iv-range { flex: 1; min-width: 140px; height: 3px; margin: 0; appearance: none; border-radius: 3px; background: var(--border); cursor: pointer; }
+.iv-range::-webkit-slider-thumb { width: 12px; height: 12px; appearance: none; border: 0; border-radius: 50%; background: var(--visual-accent); }
+.iv-range::-moz-range-thumb { width: 12px; height: 12px; border: 0; border-radius: 50%; background: var(--visual-accent); }
+.iv-value { min-width: 64px; color: var(--text); }
+.iv-status { margin-top: 10px; min-height: 1.4em; color: var(--muted); font: 12px/1.5 var(--sans); }
+.iv-status b { color: var(--text); font-weight: 500; }
+
+/* SVG text roles */
+.iv-panel-letter { fill: var(--text); font: 600 15px var(--sans); }
+.iv-panel-title { fill: var(--text); font: 500 12px var(--sans); }
+.iv-axis-title { fill: var(--muted); font: 11px var(--sans); }
+.iv-tick { fill: var(--faint); font: 10px var(--mono); }
+.iv-note { fill: var(--muted); font: 10px var(--mono); }
+.iv-legend { fill: var(--muted); font: 11px var(--sans); }
+.iv-grid { stroke: #e9edef; stroke-width: 1; }
+.iv-frame { fill: none; stroke: var(--border); stroke-width: 1; }
+.iv-axis { stroke: #aab5bb; stroke-width: 1; }
+
+/* Modality divide */
+.iv-mod-bar { transition: y .35s ease, height .35s ease; }
+@media (prefers-reduced-motion: reduce) { .iv-mod-bar { transition: none; } }
+
+/* t-SNE */
+.iv-tsne { display: grid; grid-template-columns: minmax(0, 1fr) 200px; gap: 16px; align-items: start; }
+.iv-canvas-wrap { position: relative; border: 1px solid var(--border); background: #fff; }
+.iv-canvas-wrap canvas { display: block; width: 100%; height: auto; }
+.iv-canvas-caption { position: absolute; left: 8px; right: 8px; bottom: 6px; padding: 1px 4px; border-radius: 2px; background: rgba(255,255,255,.85); color: var(--faint); font: 10px var(--mono); pointer-events: none; }
+.iv-canvas-title { position: absolute; left: 8px; top: 6px; padding: 1px 4px; border-radius: 2px; background: rgba(255,255,255,.85); color: var(--muted); font: 11px var(--sans); pointer-events: none; }
+.iv-side { display: flex; flex-direction: column; gap: 6px; }
+.iv-group-title { margin: 8px 0 2px; color: var(--faint); font: 10px var(--mono); text-transform: uppercase; letter-spacing: .06em; }
+.iv-group-title:first-child { margin-top: 0; }
+.iv-chip { display: flex; align-items: center; gap: 8px; width: 100%; padding: 6px 8px; border: 1px solid var(--border); border-radius: 3px; background: var(--bg); color: var(--text); cursor: pointer; font: 12px var(--sans); text-align: left; }
+.iv-chip i { flex: none; width: 12px; height: 12px; border-radius: 2px; background: var(--chip-color); opacity: .45; }
+.iv-chip:hover { border-color: var(--chip-color); }
+.iv-chip.is-active { border-color: var(--chip-color); background: var(--chip-bg); }
+.iv-chip.is-active i { opacity: 1; }
+.iv-seg { display: inline-flex; border: 1px solid var(--border); border-radius: 3px; overflow: hidden; }
+.iv-seg .iv-btn { border: 0; border-radius: 0; }
+.iv-seg .iv-btn + .iv-btn { border-left: 1px solid var(--border); }
+@media (max-width: 620px) {
+  .iv-tsne { grid-template-columns: 1fr; }
+  .iv-side { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .iv-group-title { grid-column: 1 / -1; }
+}
+
+/* Semantic pairs */
+.iv-sem-wrap { position: relative; }
+.iv-sem-wrap canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.iv-sem-wrap svg { position: relative; }
+.iv-classes { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+.iv-class-group { flex: 1 1 118px; padding: 6px 6px 4px; border: 2px solid var(--group-color); border-radius: 4px; }
+.iv-class-group h4 { margin: 0 0 4px; color: var(--group-color); font: 500 11px var(--sans); }
+.iv-class { display: flex; align-items: center; gap: 8px; width: 100%; padding: 4px; border: 1px solid transparent; border-radius: 3px; background: none; color: var(--text); cursor: pointer; font: 12px var(--sans); text-align: left; }
+.iv-class img { flex: none; width: 36px; height: 36px; border-radius: 2px; object-fit: cover; }
+.iv-class:hover { border-color: var(--border); }
+.iv-class.is-selected { border-color: var(--group-color); background: var(--group-bg); }
+.iv-class.is-selected span { font-weight: 500; }
+.iv-sem-line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; transition: opacity .25s, stroke-width .25s; }
+.iv-sem-band { stroke: none; transition: opacity .25s; }
+.iv-sem-marker { transition: opacity .25s; }
+
+/* ExpertLens top-6 activated images (animated) */
+.iv-top6-grid { display: grid; grid-template-columns: 92px repeat(var(--iv-top6-cols, 3), minmax(0, 1fr)); gap: 10px 14px; align-items: start; }
+.iv-top6-rowlabel { align-self: center; color: var(--muted); font: 500 12px/1.3 var(--sans); text-align: right; }
+.iv-top6-cell { min-width: 0; }
+.iv-top6-pill { display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 6px 8px; border-radius: 6px; color: var(--text); }
+.iv-top6-pill-id { font: 500 20px/1.15 var(--sans); letter-spacing: -.01em; }
+.iv-top6-pill-name { color: var(--muted); font: 10px var(--mono); }
+.iv-top6-tokens { color: var(--text); font: 13px/1.5 var(--sans); text-align: center; user-select: text; }
+.iv-top6-dot { color: var(--faint); }
+.iv-top6-images { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 6px; }
+.iv-top6-tile { position: relative; margin: 0; opacity: 0; transform: translateY(6px) scale(.97); transition: opacity .45s ease, transform .45s ease; }
+.iv-top6-tile.is-shown { opacity: 1; transform: none; }
+.iv-top6-tile img { display: block; width: 100%; aspect-ratio: 2 / 1; object-fit: cover; border: 1px solid var(--border); border-radius: 2px; }
+.iv-top6-track { height: 7px; margin-bottom: 3px; border-radius: 2px; background: #d9d9d9; overflow: hidden; }
+.iv-top6-fill { width: 0; height: 100%; border-radius: 2px; transition: width .7s cubic-bezier(.2,.7,.2,1) .15s; }
+.iv-top6-tile.is-shown .iv-top6-fill { width: var(--iv-fill, 0%); }
+.iv-top6-legend { display: flex; gap: 10px; align-items: flex-start; margin-top: 14px; color: var(--muted); font: 12px/1.5 var(--sans); }
+.iv-top6-legend-swatch { flex: none; display: inline-flex; width: 44px; height: 7px; margin-top: 6px; border-radius: 2px; overflow: hidden; }
+.iv-top6-legend-swatch i { display: block; height: 100%; width: 60%; }
+.iv-top6-legend-swatch i.is-track { width: 40%; background: #d9d9d9; }
+@media (prefers-reduced-motion: reduce) { .iv-top6-tile, .iv-top6-fill { transition: none; } }
+@media (max-width: 620px) {
+  .iv-top6-grid { grid-template-columns: 1fr; }
+  .iv-top6-rowlabel { text-align: left; margin-top: 6px; }
+}

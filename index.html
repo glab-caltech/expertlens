@@ -102,12 +102,33 @@
     .activation-replay { padding: 5px 8px; border: 1px solid var(--border); border-radius: 3px; background: var(--bg); color: var(--text); cursor: pointer; font: 11px var(--mono); }
     .activation-replay:hover { border-color: var(--visual-accent); color: var(--visual-accent); }
     .activation-replay:disabled { opacity: .5; cursor: default; }
+    .adaptation-figure { margin: 36px 0; }
+    .adaptation-chart-viewport { overflow-x: auto; }
+    .adaptation-chart { display: block; width: 100%; height: auto; }
+    .adaptation-panel-title { fill: var(--text); font: 600 16px var(--sans); }
+    .adaptation-stage-label { fill: var(--muted); font: 11px var(--sans); }
+    .adaptation-axis-label, .adaptation-tick { fill: var(--faint); font: 11px var(--mono); }
+    .adaptation-axis-label { font-size: 12px; }
+    .adaptation-grid { stroke: #e9edef; stroke-width: 1; }
+    .adaptation-stage-line { stroke: #aab5bb; stroke-width: 1; stroke-dasharray: 3 3; }
+    .adaptation-stage-arrow { fill: none; stroke-width: 1.6; opacity: .85; }
+    .adaptation-mean { fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+    .adaptation-endpoint { fill: #fff; stroke-width: 2; }
+    .adaptation-controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 8px; }
+    .adaptation-legend { display: flex; flex-wrap: wrap; gap: 8px 18px; color: var(--muted); font: 11px var(--mono); }
+    .adaptation-legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .adaptation-legend i { width: 16px; height: 2px; display: inline-block; background: var(--series-color); }
+    .adaptation-playback { display: flex; align-items: center; gap: 12px; color: var(--faint); font: 11px var(--mono); }
+    .adaptation-replay { padding: 5px 8px; border: 1px solid var(--border); border-radius: 3px; background: var(--bg); color: var(--text); cursor: pointer; font: 11px var(--mono); }
+    .adaptation-replay:hover { border-color: var(--visual-accent); color: var(--visual-accent); }
+    .adaptation-replay:disabled { opacity: .5; cursor: default; }
     footer { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--border); color: var(--faint); font: 12px/1.6 var(--mono); }
     @media (max-width: 620px) {
       .wrap { padding: 76px 22px 60px; }
       .figure-placeholder { min-height: 210px; }
       .route-parts { font-size: 9px; }
       .route-parts::after { display: none; }
+      .adaptation-chart { min-width: 700px; }
     }
     @media (max-width: 520px) {
       .lens-film-controls { gap: 8px; }
@@ -290,11 +311,21 @@
           <section class="subsection" id="efficient-adaptation">
             <h3>ExpertLens for efficient adaptation</h3>
             <p></p>
-            <figure>
-              <div class="figure-placeholder" role="img" aria-label="Placeholder for a results figure">
-                <strong>Placeholder</strong>
+            <figure class="adaptation-figure" id="adaptation-figure">
+              <div class="adaptation-chart-viewport">
+                <svg class="adaptation-chart" viewBox="0 0 1020 550" role="img" aria-label="Animated continual-training accuracy curves for math, medical, and remote sensing tasks. Top panels show training steps; bottom panels show wall-clock hours. ExpertLens, full fine-tuning, and LoRA advance at their measured training speeds.">
+                  <text class="adaptation-axis-label" x="510" y="275" text-anchor="middle">Loading training curves…</text>
+                </svg>
               </div>
-              <figcaption></figcaption>
+              <div class="adaptation-controls">
+                <div class="adaptation-legend" aria-label="Training methods">
+                  <span><i style="--series-color: #e91e63"></i>ExpertLens</span>
+                  <span><i style="--series-color: #238cc4"></i>FFT</span>
+                  <span><i style="--series-color: #2e7d32"></i>LoRA (r=32)</span>
+                </div>
+                <div class="adaptation-playback"><span class="adaptation-clock">Elapsed wall clock: 0 h</span><button class="adaptation-replay" type="button" aria-label="Replay continual-training animation" disabled>Replay</button></div>
+              </div>
+              <figcaption>Accuracy during sequential training on math, medical, and remote sensing data. Playback speed illustrates the methods’ relative wall-clock training times. Each shaded bottom panel shows in-domain accuracy during the same-colored training stage in the top plots; its curves begin when that method reaches the stage. Translucent bands around the curves show 95% confidence intervals.</figcaption>
             </figure>
           </section>
           <section class="subsection" id="expert-selection">
@@ -389,7 +420,8 @@
     updateRoute();
 
   </script>
-  <script src="static/animations/expertlens-animation.js?v=2" defer></script>
-  <script src="static/animations/figure-a-animation.js?v=1" defer></script>
+  <script src="static/animations/expertlens-animation.js?v=3" defer></script>
+  <script src="static/animations/figure-a-animation.js?v=2" defer></script>
+  <script src="static/animations/continual-training-animation.js?v=6" defer></script>
 </body>
 </html>

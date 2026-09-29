@@ -29,7 +29,7 @@
   ];
   let time = 0;
   let playing = false;
-  let started = false;
+  let readyToReplay = true;
   let previousFrame = 0;
   let frameId = 0;
 
@@ -312,9 +312,7 @@
   }
   function play() {
     if (time >= duration) time = 0;
-    started = true;
-    removeEventListener('scroll', maybeAutoplay);
-    removeEventListener('resize', maybeAutoplay);
+    readyToReplay = false;
     playing = true;
     previousFrame = 0;
     updateControls();
@@ -325,9 +323,7 @@
   seek.addEventListener('input', () => {
     const requestedTime = Number(seek.value) / 100;
     pause();
-    started = true;
-    removeEventListener('scroll', maybeAutoplay);
-    removeEventListener('resize', maybeAutoplay);
+    readyToReplay = false;
     time = requestedTime;
     render();
   });
@@ -337,12 +333,18 @@
   else addEventListener('resize', resize);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
 
-  // Begin when the animation reaches the middle of the viewport, where readers see it.
+  // Replay after the figure leaves the viewport and returns to its middle.
   function maybeAutoplay() {
-    if (started || reducedMotion.matches) return;
+    if (reducedMotion.matches) return;
     const bounds = film.getBoundingClientRect();
     const midpoint = window.innerHeight / 2;
-    if (bounds.top <= midpoint && bounds.bottom >= midpoint) play();
+    if (bounds.bottom <= 0 || bounds.top >= window.innerHeight) {
+      readyToReplay = true;
+      if (playing) pause();
+    } else if (readyToReplay && bounds.top <= midpoint && bounds.bottom >= midpoint) {
+      time = 0;
+      play();
+    }
   }
   if (!reducedMotion.matches) {
     addEventListener('scroll', maybeAutoplay, { passive: true });

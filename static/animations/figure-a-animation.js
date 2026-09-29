@@ -27,7 +27,7 @@
   const totalTime = 7600;
   const bars = [];
   const groupLabels = [];
-  let started = false;
+  let readyToReplay = true;
   let startTime = null;
   let frameId = null;
 
@@ -165,19 +165,23 @@
   function start(force = false) {
     if (reducedMotion && !force) return;
     if (frameId !== null) cancelAnimationFrame(frameId);
-    started = true;
-    removeEventListener('scroll', maybeStart);
-    removeEventListener('resize', maybeStart);
+    readyToReplay = false;
     startTime = null;
     update(0);
     frameId = requestAnimationFrame(frame);
   }
 
   function maybeStart() {
-    if (started || reducedMotion) return;
+    if (reducedMotion) return;
     const bounds = figure.getBoundingClientRect();
     const midpoint = innerHeight / 2;
-    if (bounds.top <= midpoint && bounds.bottom >= midpoint) start();
+    if (bounds.bottom <= 0 || bounds.top >= innerHeight) {
+      readyToReplay = true;
+      if (frameId !== null) cancelAnimationFrame(frameId);
+      frameId = null;
+    } else if (readyToReplay && bounds.top <= midpoint && bounds.bottom >= midpoint) {
+      start();
+    }
   }
 
   fetch('static/data/figure_a_animation_data.json')

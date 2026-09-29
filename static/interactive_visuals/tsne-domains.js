@@ -62,7 +62,7 @@
     canvas.setAttribute('aria-label', `Interactive t-SNE projection of layer ${data.layer} router activations. Image patches are circles, text tokens are crosses, expert router weights are triangles. Selected datasets are colored; everything else is gray.`);
     canvasWrap.appendChild(canvas);
     const title = html('div', 'iv-canvas-title', canvasWrap, `Layer ${data.layer} · image ○  text ×  router △`);
-    const caption = html('div', 'iv-canvas-caption', canvasWrap, '');
+    const caption = html('div', 'iv-canvas-caption', canvasWrap, 'Click a dataset to color its tokens');
 
     const side = html('div', 'iv-side', wrap);
     const active = new Set();
@@ -190,9 +190,7 @@
       segButtons.forEach(({ key, button }) => button.classList.toggle('is-active', key === modality));
       routerChip.classList.toggle('is-active', showRouter);
       routerChip.setAttribute('aria-pressed', String(showRouter));
-      const names = domains.filter(d => active.has(d)).map(d => DOMAIN_STYLE[d].label);
-      const what = modality === 'both' ? 'image patches + text tokens' : modality === 'image' ? 'image patches' : 'text tokens';
-      caption.textContent = names.length ? `${names.join(', ')} · ${what}` : 'Click a dataset to color its tokens';
+      caption.hidden = active.size > 0;
       draw();
     }
 

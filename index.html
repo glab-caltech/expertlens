@@ -272,7 +272,7 @@
               it would be much more useful to identify the relevant experts from the pretrained model itself, without first needing a representative dataset from 
               all the domains we might want to adapt to.</p>
               <p>This is the idea behind our method, <b>ExpertLens</b>. ExpertLens recovers expert semantics directly from pretrained weights by decoding router
-                 weights into semantically meaningful vocabulary tokens, <i>a la</i> the logit lens. We illustrate our method in the animation below. </p>
+                 weights into semantically meaningful vocabulary tokens, <i>a la</i> logit lens. We illustrate our method in the animation below. </p>
             <figure class="lens-film" id="expertlens-film" aria-label="ExpertLens weight-decoding animation">
               <canvas class="lens-canvas" id="lens-canvas" width="700" height="380" role="img" aria-label="Illustrative animation: a Qwen3-VL decoder layer contains two RMSNorm stages, causal self-attention, residual additions, and a sparse mixture of experts. ExpertLens extracts a router-weight row without input examples, projects it through the language-model head, and shows four of five top-scoring tokens as math-related. This five-token decision is a simplified illustration of the method.">
                 ExpertLens decodes a router-weight row through the language-model head. In this simplified five-token illustration, four math-related tokens suggest a math expert.
@@ -299,9 +299,11 @@
               <div class="activation-controls"><button class="activation-replay" type="button" aria-label="Replay dataset activation animation" disabled>Replay</button></div>
               <figcaption>Layer 18 of Qwen3-VL-30B-A3B. Asterisks mark the two highest-activation datasets in each expert group; similar patterns hold across layers and models.</figcaption>
             </figure>
+            <p>We can visualize these activations, as well as the logits that each expert decodes to. Below we show three experts from layer 18 of Qwen3-VL-30B-A3B that 
+              ExpertLens labels as medical (E121), math (E76), and remote sensing (E93), along with the vocabulary tokens decoded from their router weights and the six 
+              images whose patches most often routed to each expert.</p>
             <figure class="modality-figure" id="expertlens-top6-figure">
               <img src="static/interactive_visuals/expertlens_highlight.png" alt="Three ExpertLens-labelled experts from layer 18 of Qwen3-VL-30B-A3B (E121 medical, E76 math, E93 remote sensing) with their decoded vocabulary tokens and the six images whose patches most often routed to each expert." loading="lazy">
-              <figcaption>Three experts from layer 18 of Qwen3-VL-30B-A3B that ExpertLens labels as medical (E121), math (E76), and remote sensing (E93), with the vocabulary tokens decoded from their router weights and the six images whose patches most often routed to each expert.</figcaption>
             </figure>
             <p>We find medical experts are preferentially activated by medical data, math experts by math data, 
               and remote sensing experts by remote sensing data, with the clearest alignment on image patches. In other words, the semantic 
@@ -431,7 +433,7 @@
   <script src="static/data/tsne_embedding_L18.js" defer></script>
   <script src="static/data/expertlens_top6.js" defer></script>
   <script src="static/interactive_visuals/modality-divide.js?v=4" defer></script>
-  <script src="static/interactive_visuals/tsne-domains.js?v=2" defer></script>
+  <script src="static/interactive_visuals/tsne-domains.js?v=3" defer></script>
   <script src="static/interactive_visuals/semantic-pairs.js?v=3" defer></script>
   <script src="static/interactive_visuals/expertlens-top6.js?v=2" defer></script>
 </body>

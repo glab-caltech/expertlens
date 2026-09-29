@@ -143,6 +143,7 @@
     .selection-replay { padding: 5px 8px; border: 1px solid var(--border); border-radius: 3px; background: var(--bg); color: var(--text); cursor: pointer; font: 11px var(--mono); }
     .selection-replay:hover { border-color: var(--visual-accent); color: var(--visual-accent); }
     .selection-replay:disabled { opacity: .5; cursor: default; }
+    .takeaway-links { line-height: 1.8; }
     footer { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--border); color: var(--faint); font: 12px/1.6 var(--mono); }
     @media (max-width: 620px) {
       .wrap { padding: 76px 22px 60px; }
@@ -404,8 +405,16 @@
         </section>
         <section aria-labelledby="takeaways">
           <h2 id="takeaways">Takeaways</h2>
-          <p></p>
-         
+          <p>The main thing we learned is that multimodal MoEs are much more organized internally than they might first appear. Even though they are trained 
+            simply to route tokens efficiently, their experts develop meaningful specialization across modalities, domains, and even individual visual concepts.</p>
+          <p>That structure is also useful. With ExpertLens, we can recover domain-specialized experts directly from the pretrained weights, without needing examples 
+            from the target domain. And once we know where that specialization lives, we can use it for adaptation: updating only the relevant experts is enough to 
+            match full fine-tuning while cutting training time substantially.</p>
+          <p>More broadly, we are excited at the prospect of designing algorithms that build upon properties of architectures. In multimodal MoEs, sparsity induces a natrual 
+            modularity, and ExpertLens is one example of what becomes possible when the adaptation method is designed around that architectural property.
+          </p>
+          <p class="takeaway-links"><a href="#">Paper</a><br>
+            <a href="https://github.com/damianomarsili/ExpertLens">Code</a></p>
         </section>
       </article>
     </main>

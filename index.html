@@ -125,6 +125,24 @@
     .adaptation-replay { padding: 5px 8px; border: 1px solid var(--border); border-radius: 3px; background: var(--bg); color: var(--text); cursor: pointer; font: 11px var(--mono); }
     .adaptation-replay:hover { border-color: var(--visual-accent); color: var(--visual-accent); }
     .adaptation-replay:disabled { opacity: .5; cursor: default; }
+    .selection-chart-viewport { overflow-x: auto; }
+    .selection-chart { display: block; width: 100%; height: auto; }
+    .selection-panel-title { fill: var(--text); font: 600 11px var(--sans); }
+    .selection-stage-label { fill: var(--muted); font: 9px var(--sans); }
+    .selection-tick, .selection-axis-label { fill: var(--faint); font: 9px var(--mono); }
+    .selection-axis-label { font-size: 10px; }
+    .selection-grid { stroke: #e9edef; stroke-width: 1; }
+    .selection-boundary { stroke: #adb8bc; stroke-width: 1; stroke-dasharray: 3 3; }
+    .selection-curve { fill: none; stroke-width: 2.1; stroke-linecap: round; stroke-linejoin: round; }
+    .selection-endpoint { fill: #fff; stroke-width: 1.8; }
+    .selection-controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 8px; }
+    .selection-legend { display: flex; flex-wrap: wrap; gap: 8px 16px; color: var(--muted); font: 11px var(--mono); }
+    .selection-legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .selection-legend span.is-drawing { color: var(--text); font-weight: 500; }
+    .selection-legend i { width: 16px; height: 2px; display: inline-block; background: var(--series-color); }
+    .selection-replay { padding: 5px 8px; border: 1px solid var(--border); border-radius: 3px; background: var(--bg); color: var(--text); cursor: pointer; font: 11px var(--mono); }
+    .selection-replay:hover { border-color: var(--visual-accent); color: var(--visual-accent); }
+    .selection-replay:disabled { opacity: .5; cursor: default; }
     footer { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--border); color: var(--faint); font: 12px/1.6 var(--mono); }
     @media (max-width: 620px) {
       .wrap { padding: 76px 22px 60px; }
@@ -132,6 +150,7 @@
       .route-parts { font-size: 9px; }
       .route-parts::after { display: none; }
       .adaptation-chart { min-width: 700px; }
+      .selection-chart { min-width: 700px; }
     }
     @media (max-width: 520px) {
       .lens-film-controls { gap: 8px; }
@@ -355,10 +374,34 @@
           </section>
           <section class="subsection" id="expert-selection">
             <h3>Importance of expert selection</h3>
-            <p></p>
+            <p>The previous experiment shows that updating fewer experts can work well, but it does not tell us whether it matters which experts we choose. To
+              explore the importance of selecting the right experts, we compare ExpertLens against random expert subsets with exactly the same expert budget.
+            </p>
+            <p>We use two random baselines. <i>Random (full)</i> samples the same number of experts from the entire expert pool, while <i>Random (disjoint)</i> samples only 
+              from experts that ExpertLens did not select. We resample the random subsets for each seed, so the comparison is about expert identity rather than 
+              simply how many parameters are being updated. The animation below shows how the three methods behave throughout the same sequential adaptation setup.</p>
+            <figure class="selection-figure" id="expert-selection-figure">
+              <div class="selection-chart-viewport">
+                <svg class="selection-chart" viewBox="0 0 700 270" role="img" aria-label="Animated math, medical, and remote-sensing accuracy curves over 600 sequential training steps. Random disjoint experts appear first, random full experts second, and ExpertLens experts last, all at the same playback speed.">
+                  <text class="selection-axis-label" x="350" y="140" text-anchor="middle">Loading expert-selection curves…</text>
+                </svg>
+              </div>
+              <div class="selection-controls">
+                <div class="selection-legend" aria-label="Expert selection methods">
+                  <span><i style="--series-color: #8753b5"></i>Random (disjoint)</span>
+                  <span><i style="--series-color: #238cc4"></i>Random (full)</span>
+                  <span><i style="--series-color: #e91e63"></i>ExpertLens</span>
+                </div>
+                <button class="selection-replay" type="button" aria-label="Replay expert selection animation" disabled>Replay</button>
+              </div>
+              <figcaption>ExpertLens outperforms matched-budget random selection baselines, indicating that the identity of the updated experts is important for selective adaptation.</figcaption>
+            </figure>
+            <p>The clearest result comes from <i>Random (full)</i>. Even though it updates the same number of experts, it consistently falls behind ExpertLens, especially on math and medical. The benefit is 
+              not just coming from sparse fine-tuning, the experts we update seem to matter. <i>Random (disjoint)</i> is a bit more interesting. On math, it can keep up with ExpertLens, which tells us there is some 
+              redundancy in the model and more than one subset of experts can work. But on medical and remote sensing it falls behind. Overall, the picture is that sparse adaptation helps, but picking experts 
+              that are already aligned with the target domain helps more.</p>
           </section>
         </section>
-
         <section aria-labelledby="takeaways">
           <h2 id="takeaways">Takeaways</h2>
           <p></p>
@@ -444,6 +487,7 @@
   <script src="static/animations/expertlens-animation.js?v=3" defer></script>
   <script src="static/animations/figure-a-animation.js?v=2" defer></script>
   <script src="static/animations/continual-training-animation.js?v=6" defer></script>
+  <script src="static/animations/expert-selection-animation.js?v=2" defer></script>
   <script src="static/data/modality_divide_qwen.js" defer></script>
   <script src="static/data/semantic_pairs_qwen.js" defer></script>
   <script src="static/data/tsne_embedding_L18.js" defer></script>

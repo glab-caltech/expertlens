@@ -181,7 +181,7 @@
           <a class="route-stop" href="#expertlens" data-x="302" data-title="ExpertLens" style="left:43.14%;top:36.5px" aria-label="ExpertLens"><span class="route-node"></span></a>
           <a class="route-stop" href="#efficient-adaptation" data-x="457" data-title="ExpertLens for efficient adaptation" style="left:65.29%;top:39.5px" aria-label="ExpertLens for efficient adaptation"><span class="route-node"></span></a>
           <a class="route-stop" href="#expert-selection" data-x="552" data-title="Importance of expert selection" style="left:78.86%;top:43.25px" aria-label="Importance of expert selection"><span class="route-node"></span></a>
-          <a class="route-stop" href="#kimi-vl" data-x="682" data-title="Experiments on Kimi-VL" style="left:97.43%;top:36.5px" aria-label="Experiments on Kimi-VL"><span class="route-node"></span></a>
+          <a class="route-stop" href="#takeaways" data-x="682" data-title="Takeaways" style="left:97.43%;top:36.5px" aria-label="Takeaways"><span class="route-node"></span></a>
           <span class="route-marker" id="route-marker" aria-hidden="true"></span>
         </nav>
 
@@ -313,6 +313,17 @@
 
         <section aria-labelledby="adaptation-heading">
           <h2 id="adaptation-heading">Domain-Specialized Experts for Efficient Adaptation</h2>
+          <p>So far, we’ve mostly treated this structure as something to understand. But if the experts are specialized by domain, 
+            can we actually <b>use that specialization to adapt the model more efficiently?</b></p>
+            <p>We test this by adapting a single Qwen3-VL-30B-A3B model sequentially across three domains: math, medical, and remote sensing. 
+              Rather than resetting back to the pretrained model each time, we keep adapting the same model from one domain to the next. This gives 
+              us a setting where the model has to repeatedly pick up new domain-specific behavior, while letting us compare different ways of deciding 
+              which parameters to update. Our goal is to understand: if we update only the experts that already look relevant to a domain, can we match 
+              full fine-tuning with substantially less training time?</p>
+            <p>For ExpertLens, we use the domain specialists identified from the pretrained weights and update only those expert MLPs, while freezing 
+              the rest. We still train the shared decoder components that help route and shape information through the model, including the router, 
+              attention projections, and LM head. We compare this against full fine-tuning, where all expert MLPs are updated, and LoRA, a standard 
+              parameter-efficient baseline. All methods use the same data, training objective, and sequential adaptation setup.</p>
           <section class="subsection" id="efficient-adaptation">
             <h3>ExpertLens for efficient adaptation</h3>
             <p></p>
@@ -335,10 +346,6 @@
           </section>
           <section class="subsection" id="expert-selection">
             <h3>Importance of expert selection</h3>
-            <p></p>
-          </section>
-          <section class="subsection" id="kimi-vl">
-            <h3>Experiments on Kimi-VL</h3>
             <p></p>
           </section>
         </section>
@@ -386,8 +393,8 @@
       let distance = 0;
       if (current >= 0) {
         const start = sections[current].getBoundingClientRect().top + scrollY;
-        const next = sections[current + 1] || document.getElementById('takeaways');
-        const end = next.getBoundingClientRect().top + scrollY;
+        const next = sections[current + 1];
+        const end = next ? next.getBoundingClientRect().top + scrollY : document.documentElement.scrollHeight;
         const fraction = Math.max(0, Math.min(1, (readingPosition - start) / Math.max(1, end - start)));
         distance = stopLengths[current] + fraction * ((stopLengths[current + 1] || routeLength) - stopLengths[current]);
       }

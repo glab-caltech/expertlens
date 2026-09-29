@@ -326,7 +326,12 @@
               parameter-efficient baseline. All methods use the same data, training objective, and sequential adaptation setup.</p>
           <section class="subsection" id="efficient-adaptation">
             <h3>ExpertLens for efficient adaptation</h3>
-            <p></p>
+            <p>We start with the main comparison: ExpertLens versus full fine-tuning and LoRA. The first thing to notice is that selectively updating 
+              the experts identified by ExpertLens does not come at the cost of adaptation quality. Across math, medical, and remote sensing, ExpertLens 
+              matches or slightly surpasses full fine-tuning, while LoRA consistently trails behind.</p>
+              <p>The animation below plays the three methods at their measured training wall-clock speeds. The top row tracks 
+                performance over training steps, while the bottom row shows the corresponding in-domain accuracy against actual training time. Depending 
+                on the domain, ExpertLens updates only 21.7–47.0% of the model parameters, which substantially reduces training time.</p>
             <figure class="adaptation-figure" id="adaptation-figure">
               <div class="adaptation-chart-viewport">
                 <svg class="adaptation-chart" viewBox="0 0 1020 550" role="img" aria-label="Animated continual-training accuracy curves for math, medical, and remote sensing tasks. Top panels show training steps; bottom panels show wall-clock hours. ExpertLens, full fine-tuning, and LoRA advance at their measured training speeds.">
@@ -343,6 +348,10 @@
               </div>
               <figcaption>Accuracy during sequential training on math, medical, and remote sensing data. Playback speed illustrates the methods’ relative wall-clock training times. Each shaded bottom panel shows in-domain accuracy during the same-colored training stage in the top plots; its curves begin when that method reaches the stage. Translucent bands around the curves show 95% confidence intervals.</figcaption>
             </figure>
+            <p>The speedup is substantial. Compared with full fine-tuning, ExpertLens is 3.2× faster on math, 4.0× faster on medical, and 
+              4.8× faster on remote sensing, for a 4.0× average speedup across the three domains. It is also 2.9× faster than LoRA, 
+              while reaching higher accuracy.</p>
+            <p>By leveraging the emergent structure of multimodal MoEs, we are able to match the performance of full fine-tuning at substantially reduced cost.</p>
           </section>
           <section class="subsection" id="expert-selection">
             <h3>Importance of expert selection</h3>

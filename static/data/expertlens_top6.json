@@ -1,12 +1,8 @@
 {
- "model": "Qwen/Qwen3-VL-30B-A3B-Instruct",
  "layer": 18,
- "source": "expertlens_highlight.png",
- "note": "fraction = colored share of the bar above each image in the source figure (share of that image's patches routed to the expert).",
  "experts": [
   {
    "expert": 121,
-   "domain": "medicine",
    "name": "Medical expert",
    "color": "#238CC4",
    "shade": "#8AC4E8",
@@ -50,7 +46,6 @@
   },
   {
    "expert": 76,
-   "domain": "math",
    "name": "Math expert",
    "color": "#E91E63",
    "shade": "#FFCBE1",
@@ -92,7 +87,6 @@
   },
   {
    "expert": 93,
-   "domain": "remote_sensing",
    "name": "Remote-sensing expert",
    "color": "#E67E22",
    "shade": "#F8D2A0",

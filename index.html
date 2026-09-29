@@ -247,7 +247,7 @@
             <p>The domain-level results suggest that multimodal MoEs are organized around high-level visual structure. Now we can ask whether this specialization goes one step further: within a domain, are experts also sensitive to <b>object-level semantics?</b> In other words, do semantically 
               related objects tend to recruit similar experts?</p>
 
-              <p>To isolate semantics from dataset effects, we ran the analysis entirely within TinyImageNet. For each object class, we tracked which experts were consistently activated by its image patches. We then measured how much those expert sets overlapped between pairs of classes. We represent the degree of "expert overlap" betwee object classes as Z(a,b).</p>
+              <p>To isolate semantics from dataset effects, we ran the analysis entirely within <a href="https://www.kaggle.com/c/tiny-imagenet">TinyImageNet</a>. For each object class, we tracked which experts were consistently activated by its image patches. We then measured how much those expert sets overlapped between pairs of classes. We represent the degree of "expert overlap" betwee object classes as Z(a,b).</p>
 
                 <p>Across all class pairs, we can see a clear pattern: the farther apart two classes are semantically, the less their expert sets overlap. 
                   <b>(A)</b> shows this relationship over all TinyImageNet class pairs, with "semantic distance" represented by WordNet Wu-Palmer distance.
@@ -272,7 +272,7 @@
               it would be much more useful to identify the relevant experts from the pretrained model itself, without first needing a representative dataset from 
               all the domains we might want to adapt to.</p>
               <p>This is the idea behind our method, <b>ExpertLens</b>. ExpertLens recovers expert semantics directly from pretrained weights by decoding router
-                 weights into semantically meaningful vocabulary tokens, <i>a la</i> logit lens. We illustrate our method in the animation below. </p>
+                 weights into semantically meaningful vocabulary tokens, <i>a la</i> <a href="https://arxiv.org/abs/2303.08112">logit lens</a>. We illustrate our method in the animation below. </p>
             <figure class="lens-film" id="expertlens-film" aria-label="ExpertLens weight-decoding animation">
               <canvas class="lens-canvas" id="lens-canvas" width="700" height="380" role="img" aria-label="Illustrative animation: a Qwen3-VL decoder layer contains two RMSNorm stages, causal self-attention, residual additions, and a sparse mixture of experts. ExpertLens extracts a router-weight row without input examples, projects it through the language-model head, and shows four of five top-scoring tokens as math-related. This five-token decision is a simplified illustration of the method.">
                 ExpertLens decodes a router-weight row through the language-model head. In this simplified five-token illustration, four math-related tokens suggest a math expert.
@@ -322,7 +322,7 @@
               full fine-tuning with substantially less training time?</p>
             <p>For ExpertLens, we use the domain specialists identified from the pretrained weights and update only those expert MLPs, while freezing 
               the rest. We still train the shared decoder components that help route and shape information through the model, including the router, 
-              attention projections, and LM head. We compare this against full fine-tuning, where all expert MLPs are updated, and LoRA, a standard 
+              attention projections, and LM head. We compare this against full fine-tuning, where all expert MLPs are updated, and <a href="https://arxiv.org/abs/2106.09685">LoRA</a>, a standard
               parameter-efficient baseline. All methods use the same data, training objective, and sequential adaptation setup.</p>
           <section class="subsection" id="efficient-adaptation">
             <h3>ExpertLens for efficient adaptation</h3>

@@ -220,9 +220,11 @@
             from interchangeable. We close this section by introducing <a class="intro-emphasis" href="#expertlens">ExpertLens</a>, a way to uncover 
             this structure directly from the model’s pretrained weights, without needing any 
             domain-specific data.</p>
-            <p>Before getting to our findings, it’s worth briefly looking at what people have already found inside MoEs. In <b>language-only</b> models,
-            <a href="https://arxiv.org/abs/2401.04088">Jiang et al.</a>, <a href="https://arxiv.org/abs/2412.16971">Antoine et al.</a>, and <a href="https://arxiv.org/abs/2505.24593">Li et al.</a> have shown that experts are often far from interchangeable: they can develop preferences for
-            different token types, parts of speech, and other linguistic patterns. <a href="https://arxiv.org/abs/2605.06663">Wang et al.</a> explicitly train text-only MoEs to encourage stronger domain-level
+            <p> Our findings on multimodal MoE models' semantic organization add new context to previous works in MoE interpretability.
+              <!-- Before getting to our findings, it’s worth briefly looking at what people have already found inside MoEs.  -->
+              In <b>language-only</b> models,
+            <a href="https://arxiv.org/abs/2401.04088">Jiang et al.</a>, <a href="https://arxiv.org/abs/2412.16971">Antoine et al.</a>, and <a href="https://arxiv.org/abs/2505.24593">Li et al.</a> have shown that experts can develop preferences for
+            different token types, parts of speech, and other linguistic patterns, without as much specialization for semantic domains. <a href="https://arxiv.org/abs/2605.06663">Wang et al.</a> explicitly train text-only MoEs to encourage stronger domain-level
             modularity, treating modularity as something to build into the training objective rather than an emergent property. By comparison, much less work has
             looked at multimodal MoEs. Recent studies from <a href="https://arxiv.org/abs/2604.08541">Xu et al.</a> and <a href="https://arxiv.org/abs/2608.04454">Zhang et al.</a> have started exploring how routing changes across visual, textual, and reasoning
             stages, but the <b>semantic organization of multimodal experts</b>, which is the focus of our work, is still relatively unexplored.</p>

@@ -10,10 +10,9 @@
   const plotTop = 42;
   const plotHeight = 176;
   const plotWidth = 190;
-  const phaseMs = 1800;
-  const pauseMs = 125;
+  const durationMs = 1800;
   const methods = ['Random (disjoint)', 'Random (full)', 'ExpertLens'];
-  const totalTime = methods.length * phaseMs + (methods.length - 1) * pauseMs;
+  const totalTime = durationMs;
   const tasks = [
     { id: 'math', name: 'Math', x: 48, min: 49, max: 68, ticks: [50, 55, 60, 65] },
     { id: 'medical', name: 'Medical', x: 272, min: 47, max: 55.5, ticks: [48, 50, 52, 54] },
@@ -153,25 +152,23 @@
           cx: task.x, cy: yFor(row.points[0].mean, task), r: 2.8,
           stroke: row.color, opacity: 0, class: 'selection-endpoint'
         }, dotLayer);
-        graphics.push({ task, row, methodIndex, maxStep, clipRect, endpoint });
+        graphics.push({ task, row, maxStep, clipRect, endpoint });
       });
     });
     update(0);
   }
 
   function update(elapsed) {
-    legendItems.forEach((item, index) => {
-      const start = index * (phaseMs + pauseMs);
-      item.classList.toggle('is-drawing', elapsed >= start && elapsed < start + phaseMs);
+    legendItems.forEach(item => {
+      item.classList.toggle('is-drawing', elapsed < durationMs);
     });
     graphics.forEach(item => {
-      const start = item.methodIndex * (phaseMs + pauseMs);
-      const fraction = Math.max(0, Math.min(1, (elapsed - start) / phaseMs));
+      const fraction = Math.max(0, Math.min(1, elapsed / durationMs));
       const step = fraction * item.maxStep;
       item.clipRect.setAttribute('width', fraction * plotWidth);
       item.endpoint.setAttribute('cx', xFor(step, item.task, item.maxStep));
       item.endpoint.setAttribute('cy', yFor(meanAt(item.row.points, step), item.task));
-      item.endpoint.setAttribute('opacity', elapsed >= start ? 1 : 0);
+      item.endpoint.setAttribute('opacity', 1);
     });
   }
 

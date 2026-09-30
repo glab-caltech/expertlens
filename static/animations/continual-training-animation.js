@@ -189,7 +189,7 @@
       'text-anchor': 'middle', transform: `rotate(-90 19 ${bottomY + panelHeight / 2})`
     }, svg, 'Accuracy (%)');
     text('Training step', 10, 281, 'adaptation-axis-label');
-    text('Wall clock (hours)', 510, 541, 'adaptation-axis-label', 'middle');
+    text('Wall clock (hours)', 10, 541, 'adaptation-axis-label');
 
     const ribbonLayer = element('g');
     const lineLayer = element('g');

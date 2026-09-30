@@ -220,6 +220,12 @@
             from interchangeable. We close this section by introducing <a class="intro-emphasis" href="#expertlens">ExpertLens</a>, a way to uncover 
             this structure directly from the model’s pretrained weights, without needing any 
             domain-specific data.</p>
+            <p>Before getting to our findings, it’s worth briefly looking at what people have already found inside MoEs. In <b>language-only</b> models,
+            <a href="https://arxiv.org/abs/2401.04088">Jiang et al.</a>, <a href="https://arxiv.org/abs/2412.16971">Antoine et al.</a>, and <a href="https://arxiv.org/abs/2505.24593">Li et al.</a> have shown that experts are often far from interchangeable: they can develop preferences for
+            different token types, parts of speech, and other linguistic patterns. <a href="https://arxiv.org/abs/2605.06663">Wang et al.</a> explicitly train text-only MoEs to encourage stronger domain-level
+            modularity, treating modularity as something to build into the training objective rather than an emergent property. By comparison, much less work has
+            looked at multimodal MoEs. Recent studies from <a href="https://arxiv.org/abs/2604.08541">Xu et al.</a> and <a href="https://arxiv.org/abs/2608.04454">Zhang et al.</a> have started exploring how routing changes across visual, textual, and reasoning
+            stages, but the <b>semantic organization of multimodal experts</b>, which is the focus of our work, is still relatively unexplored.</p>
           <section class="subsection" id="modality">
             <h3>Specialization by modality</h3>
             <p>We'll start with the most basic distinction in a multimodal model: <b>vision versus language</b>. 
@@ -385,7 +391,7 @@
               simply how many parameters are being updated. The animation below shows how the three methods behave throughout the same sequential adaptation setup.</p>
             <figure class="selection-figure" id="expert-selection-figure">
               <div class="selection-chart-viewport">
-                <svg class="selection-chart" viewBox="0 0 700 270" role="img" aria-label="Animated math, medical, and remote-sensing accuracy curves over 600 sequential training steps. Random disjoint experts appear first, random full experts second, and ExpertLens experts last, all at the same playback speed.">
+                <svg class="selection-chart" viewBox="0 0 700 270" role="img" aria-label="Animated math, medical, and remote-sensing accuracy curves over 600 sequential training steps. Random disjoint, random full, and ExpertLens curves grow together at the same playback speed.">
                   <text class="selection-axis-label" x="350" y="140" text-anchor="middle">Loading expert-selection curves…</text>
                 </svg>
               </div>
@@ -542,8 +548,8 @@
   <script src="static/data/expertlens_random_animation_data.js" defer></script>
   <script src="static/animations/expertlens-animation.js?v=3" defer></script>
   <script src="static/animations/figure-a-animation.js?v=3" defer></script>
-  <script src="static/animations/continual-training-animation.js?v=7" defer></script>
-  <script src="static/animations/expert-selection-animation.js?v=3" defer></script>
+  <script src="static/animations/continual-training-animation.js?v=8" defer></script>
+  <script src="static/animations/expert-selection-animation.js?v=4" defer></script>
   <script src="static/data/modality_divide_qwen.js" defer></script>
   <script src="static/data/semantic_pairs_qwen.js" defer></script>
   <script src="static/data/tsne_embedding_L18.js" defer></script>

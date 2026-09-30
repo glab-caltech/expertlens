@@ -204,11 +204,13 @@
     }
   }
 
-  fetch('static/data/expertlens_random_animation_data.json')
-    .then(response => {
+  const preloaded = window.IV_DATA && window.IV_DATA.expertlens_random_animation_data;
+  const dataSource = preloaded ? Promise.resolve(preloaded) :
+    fetch('static/data/expertlens_random_animation_data.json').then(response => {
       if (!response.ok) throw new Error('Could not load expert-selection data');
       return response.json();
-    })
+    });
+  dataSource
     .then(data => {
       build(data);
       replayButton.disabled = false;

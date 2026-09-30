@@ -232,9 +232,7 @@
                 purple showing text-token activations. Across layers, experts are rarely perfectly balanced. Many lean strongly toward either vision or language.</p>
             <figure class="modality-figure" id="modality-divide-figure">
               <img src="static/figures/modality.png" alt="Modality specialization of Qwen3-VL." width="13915" height="4389" loading="lazy">
-              <figcaption><b>(A)</b>: Modality specialization in Qwen3-VL-30B-A3B. Experts across layers favor image patches 
-                (orange) or text tokens (purple). Move the slider to view a different layer. <b>(B)</b>: Distribution of each expert’s text-token activation share. 
-                producing a bimodal distribution of modality preference. The distribution is bimodal (Hartigan dip = 0.0136, p < 0.001).</figcaption>
+              <figcaption><b>(A)</b> Experts in the selected layer of Qwen3-VL-30B-A3B favor image patches (orange) or text tokens (purple). Move the slider to view another layer. <b>(B)</b> Pale blue bars show the distribution of experts’ text-token activation share pooled across all layers. The distribution is visibly bimodal (Hartigan dip = 0.0136, p &lt; 0.001). The purple line shows the same distribution for the selected layer.</figcaption>
             </figure>
             <p>This structure is particularly visible when we consider all experts at once <b>(B)</b>. Instead of a single unimodal peak for modality preference, the 
               distribution is visibly bimodal: one group of experts is strongly image-oriented, while another peak appears to be more text-oriented.
@@ -255,8 +253,7 @@
             </p>
             <figure class="modality-figure" id="tsne-domains-figure">
               <img src="static/figures/t-SNE.png" alt="t-SNE projections of medical, math, and remote sensing image and text activations from Qwen3-VL." width="18524" height="6780" loading="lazy">
-              <figcaption><b>(A)</b> Layer-18 image-patch and text-token activations from six datasets, projected alongside router weights with t-SNE. 
-                <b>(B)</b> All domains together: image patches form tighter domain-specific clusters than text tokens. You can toggle different datasets to see them projected onto the t-SNE map.</figcaption>
+              <figcaption>Layer-18 image-patch and text-token activations from six datasets, projected alongside router weights with t-SNE. You can toggle different datasets and modalities to see them highlighted on the t-SNE map.</figcaption>
             </figure>
             <p>To characterize this organization more systematically, we can measure the local structure of the representation space using nearest-neighbor purity. Basically, we want to see whether grouping by semantic category, versus low-level image or text statistics, results in a better explanation of the organization of intermediate image-patch and text-token activations.
             </p>
@@ -551,7 +548,7 @@
   <script src="static/data/semantic_pairs_qwen.js" defer></script>
   <script src="static/data/tsne_embedding_L18.js" defer></script>
   <script src="static/data/expertlens_top6.js" defer></script>
-  <script src="static/interactive_visuals/modality-divide.js?v=5" defer></script>
+  <script src="static/interactive_visuals/modality-divide.js?v=6" defer></script>
   <script src="static/interactive_visuals/tsne-domains.js?v=3" defer></script>
   <script src="static/interactive_visuals/semantic-pairs.js?v=3" defer></script>
   <script src="static/interactive_visuals/expertlens-top6.js?v=2" defer></script>

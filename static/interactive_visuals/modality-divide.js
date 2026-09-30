@@ -9,7 +9,7 @@
   const TEXT_COLOR = '#8753B5';
   const HIST_COLOR = '#BCD8EC';
   const HIST_EDGE = '#8fb8d8';
-  const W = 700;
+  const W = 720;
   const H = 330;
   const A = { left: 52, right: 446, top: 44, bottom: 244 };
   const B = { left: 522, right: 668, top: 60, bottom: 244 };
@@ -107,7 +107,6 @@
     // ---------- Panel B: histogram ----------
     text(svg, '(B)', 478, 30, 'iv-panel-letter');
     text(svg, 'Modality specificity of experts', (B.left + B.right) / 2, 32, 'iv-panel-title', 'middle');
-    text(svg, 'Hartigan dip = 0.0136, p < 0.001', (B.left + B.right) / 2, 47, 'iv-note', 'middle');
     const histH = B.bottom - B.top;
     const nBins = pooled.length;
     const binW = (B.right - B.left) / nBins;

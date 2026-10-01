@@ -73,6 +73,7 @@
 .iv-top6-grid { display: grid; grid-template-columns: 92px repeat(var(--iv-top6-cols, 3), minmax(0, 1fr)); gap: 10px 14px; align-items: start; }
 .iv-top6-rowlabel { align-self: center; color: var(--muted); font: 500 12px/1.3 var(--sans); text-align: right; }
 .iv-top6-cell { min-width: 0; }
+.iv-top6-mobile-label { display: none; }
 .iv-top6-pill { display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 6px 8px; border-radius: 6px; color: var(--text); }
 .iv-top6-pill-id { font: 500 20px/1.15 var(--sans); letter-spacing: -.01em; }
 .iv-top6-pill-name { color: var(--muted); font: 10px var(--mono); }
@@ -91,6 +92,11 @@
 .iv-top6-legend-swatch i.is-track { width: 40%; background: #d9d9d9; }
 @media (prefers-reduced-motion: reduce) { .iv-top6-tile, .iv-top6-fill { transition: none; } }
 @media (max-width: 620px) {
-  .iv-top6-grid { grid-template-columns: 1fr; }
-  .iv-top6-rowlabel { text-align: left; margin-top: 6px; }
+  .iv-top6-grid { display: flex; flex-direction: column; align-items: stretch; gap: 10px; }
+  .iv-top6-rowlabel { display: none; }
+  .iv-top6-cell { order: var(--iv-mobile-order); }
+  .iv-top6-expert-start { margin-top: 12px; padding-top: 18px; border-top: 1px solid var(--border); }
+  .iv-top6-first-expert { margin-top: 0; padding-top: 0; border-top: 0; }
+  .iv-top6-mobile-label { display: block; margin-bottom: 6px; color: var(--muted); font: 500 12px/1.3 var(--sans); }
+  .iv-top6-tokens { text-align: left; }
 }

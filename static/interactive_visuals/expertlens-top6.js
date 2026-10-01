@@ -20,6 +20,9 @@
     const n = parseInt(hex.slice(1), 16);
     return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
   }
+  function setMobileOrder(cell, expertIndex, rowIndex) {
+    cell.style.setProperty('--iv-mobile-order', String(expertIndex * 3 + rowIndex));
+  }
 
   function build(data) {
     const wrap = html('div', 'iv-figure iv-top6');
@@ -28,8 +31,9 @@
 
     // Row 1: expert index pills
     html('div', 'iv-top6-rowlabel', grid, 'Expert index');
-    data.experts.forEach(e => {
-      const cell = html('div', 'iv-top6-cell', grid);
+    data.experts.forEach((e, ei) => {
+      const cell = html('div', `iv-top6-cell iv-top6-expert-start${ei ? '' : ' iv-top6-first-expert'}`, grid);
+      setMobileOrder(cell, ei, 0);
       const pill = html('div', 'iv-top6-pill', cell);
       pill.style.background = e.shade;
       html('span', 'iv-top6-pill-id', pill, `E${e.expert}`);
@@ -37,8 +41,10 @@
     });
     // Row 2: decoded logits (selectable text)
     html('div', 'iv-top6-rowlabel', grid, 'Decoded logits');
-    data.experts.forEach(e => {
+    data.experts.forEach((e, ei) => {
       const cell = html('div', 'iv-top6-cell iv-top6-tokens', grid);
+      setMobileOrder(cell, ei, 1);
+      html('div', 'iv-top6-mobile-label', cell, 'Decoded logits');
       e.tokens.forEach((tok, i) => {
         if (i) html('span', 'iv-top6-dot', cell, ' · ');
         html('span', '', cell, tok);
@@ -49,6 +55,8 @@
     const tiles = [];
     data.experts.forEach((e, ei) => {
       const cell = html('div', 'iv-top6-cell', grid);
+      setMobileOrder(cell, ei, 2);
+      html('div', 'iv-top6-mobile-label', cell, 'Top-6 activated images');
       const imgs = html('div', 'iv-top6-images', cell);
       e.images.forEach((img, slot) => {
         const tile = html('figure', 'iv-top6-tile', imgs);
@@ -63,7 +71,7 @@
         pic.decoding = 'async';
         tile.appendChild(pic);
         tile.title = `${(100 * img.fraction).toFixed(1)}% of this image's patches routed to E${e.expert}`;
-        tiles.push({ tile, order: slot * data.experts.length + ei });
+        tiles.push({ tile, expertIndex: ei, slot, order: slot * data.experts.length + ei });
       });
     });
     tiles.sort((a, b) => a.order - b.order);
@@ -97,7 +105,9 @@
       }
       replay.disabled = true;
       void wrap.offsetWidth;
-      tiles.forEach((t, i) => {
+      const revealTiles = matchMedia('(max-width: 620px)').matches ?
+        [...tiles].sort((a, b) => a.expertIndex - b.expertIndex || a.slot - b.slot) : tiles;
+      revealTiles.forEach((t, i) => {
         timers.push(setTimeout(() => t.tile.classList.add('is-shown'), 150 + i * STEP_MS));
       });
       timers.push(setTimeout(() => { replay.disabled = false; }, 150 + tiles.length * STEP_MS + 500));
